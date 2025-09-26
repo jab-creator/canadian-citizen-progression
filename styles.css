@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #FF0000 0%, #FFFFFF 50%, #FF0000 100%);
     min-height: 100vh;
     color: #333;
 }
@@ -72,19 +72,23 @@ header p {
 }
 
 .stat-card.primary .stat-icon {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #FF0000, #CC0000);
 }
 
 .stat-card.secondary .stat-icon {
-    background: linear-gradient(135deg, #f093fb, #f5576c);
+    background: linear-gradient(135deg, #FF0000, #AA0000);
 }
 
 .stat-card.accent .stat-icon {
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    background: linear-gradient(135deg, #CC0000, #FF0000);
 }
 
 .stat-card.info .stat-icon {
-    background: linear-gradient(135deg, #43e97b, #38f9d7);
+    background: linear-gradient(135deg, #AA0000, #FF0000);
+}
+
+.stat-card.warning .stat-icon {
+    background: linear-gradient(135deg, #FF6666, #FF0000);
 }
 
 .stat-content h3 {
@@ -131,7 +135,7 @@ header p {
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    background: linear-gradient(90deg, #FF0000, #CC0000);
     border-radius: 15px;
     transition: width 0.5s ease;
     width: 0%;
@@ -178,7 +182,7 @@ header p {
 .countdown-number {
     font-size: 3rem;
     font-weight: bold;
-    color: #667eea;
+    color: #FF0000;
     line-height: 1;
 }
 
@@ -226,7 +230,7 @@ header p {
 }
 
 .tab-button.active {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #FF0000, #CC0000);
     color: white;
 }
 
@@ -269,13 +273,13 @@ header p {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #FF0000, #CC0000);
     color: white;
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
 }
 
 .btn-secondary {
@@ -532,6 +536,61 @@ header p {
 
 .overlay.active {
     display: block;
+}
+
+/* Calculation Explanation */
+.calculation-explanation {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.calculation-explanation h3 {
+    text-align: center;
+    color: #FF0000;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+}
+
+.explanation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.explanation-card {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 10px;
+    border-left: 4px solid #FF0000;
+}
+
+.explanation-card h4 {
+    color: #FF0000;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.explanation-card p {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.disclaimer {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.disclaimer p {
+    margin: 0;
+    color: #856404;
 }
 
 /* Responsive Design */

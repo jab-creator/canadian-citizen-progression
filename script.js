@@ -288,7 +288,7 @@ class CitizenshipTracker {
         const daysNeeded = 1095 - calculation.daysInCanada;
         
         if (daysNeeded <= 0) {
-            return new Date(); // Already eligible
+            return null; // Already eligible - return null instead of current date
         }
 
         const today = new Date();
@@ -298,18 +298,31 @@ class CitizenshipTracker {
         return eligibilityDate;
     }
 
+    calculateTotalTripDays() {
+        return this.trips.reduce((total, trip) => {
+            return total + this.calculateTripDuration(trip.departureDate, trip.returnDate);
+        }, 0);
+    }
+
     // Dashboard Updates
     updateDashboard() {
         const calculation = this.calculateDaysInCanada();
         const daysInCanada = calculation.daysInCanada;
         const daysRemaining = Math.max(0, 1095 - daysInCanada);
         const progressPercent = Math.min(100, (daysInCanada / 1095) * 100);
+        const totalTripDays = this.calculateTotalTripDays();
 
         // Update stats
         document.getElementById('daysInCanada').textContent = daysInCanada.toLocaleString();
         document.getElementById('daysRemaining').textContent = daysRemaining.toLocaleString();
         document.getElementById('progressPercent').textContent = `${progressPercent.toFixed(1)}%`;
         document.getElementById('totalTrips').textContent = this.trips.length;
+        
+        // Update total trip days if element exists
+        const totalTripDaysElement = document.getElementById('totalTripDays');
+        if (totalTripDaysElement) {
+            totalTripDaysElement.textContent = totalTripDays.toLocaleString();
+        }
 
         // Update progress bar
         document.getElementById('progressFill').style.width = `${progressPercent}%`;
@@ -321,14 +334,24 @@ class CitizenshipTracker {
 
     updateCountdown() {
         const eligibilityDate = this.calculateEstimatedEligibilityDate();
+        
+        if (!eligibilityDate) {
+            // Already eligible
+            document.getElementById('countdownDays').textContent = '🎉';
+            document.getElementById('countdownHours').textContent = 'ELIGIBLE';
+            document.getElementById('countdownMinutes').textContent = 'NOW';
+            document.getElementById('countdownSeconds').textContent = '🍁';
+            return;
+        }
+
         const now = new Date();
         const timeDiff = eligibilityDate - now;
 
         if (timeDiff <= 0) {
-            document.getElementById('countdownDays').textContent = '0';
-            document.getElementById('countdownHours').textContent = '0';
-            document.getElementById('countdownMinutes').textContent = '0';
-            document.getElementById('countdownSeconds').textContent = '0';
+            document.getElementById('countdownDays').textContent = '🎉';
+            document.getElementById('countdownHours').textContent = 'ELIGIBLE';
+            document.getElementById('countdownMinutes').textContent = 'NOW';
+            document.getElementById('countdownSeconds').textContent = '🍁';
             return;
         }
 

@@ -10,7 +10,7 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-flag"></i> Canadian Citizenship Tracker</h1>
+            <h1>🍁 Canadian Citizenship Tracker 🍁</h1>
             <p>Track your progress towards Canadian citizenship eligibility</p>
         </header>
 
@@ -59,6 +59,17 @@
                             <h3>Total Trips</h3>
                             <div class="stat-number" id="totalTrips">0</div>
                             <div class="stat-subtitle">recorded</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card warning">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Days Outside</h3>
+                            <div class="stat-number" id="totalTripDays">0</div>
+                            <div class="stat-subtitle">total trip days</div>
                         </div>
                     </div>
                 </div>
@@ -126,6 +137,41 @@
                         <i class="fas fa-plane"></i>
                         <h3>No trips recorded yet</h3>
                         <p>Add your first trip to start tracking your time outside Canada</p>
+                    </div>
+                </div>
+
+                <!-- Calculation Explanation -->
+                <div class="calculation-explanation">
+                    <h3>🧮 How Your Eligibility is Calculated</h3>
+                    <div class="explanation-grid">
+                        <div class="explanation-card">
+                            <h4>📅 5-Year Eligibility Period</h4>
+                            <p>Your eligibility is calculated based on the 5 years immediately before your application date. If you've been a permanent resident for less than 5 years, we use your PR date as the start.</p>
+                        </div>
+                        <div class="explanation-card">
+                            <h4>🏠 1,095 Days Required</h4>
+                            <p>You must be physically present in Canada for at least 1,095 days (3 years) during your 5-year eligibility period. This is the minimum requirement for citizenship.</p>
+                        </div>
+                        <div class="explanation-card">
+                            <h4>✈️ Trip Calculations</h4>
+                            <p>Each trip you record reduces your days in Canada. We calculate the exact overlap between your trips and your eligibility period to give you accurate numbers.</p>
+                        </div>
+                        <div class="explanation-card">
+                            <h4>🎯 Days in Canada Formula</h4>
+                            <p><strong>Days in Canada = Total Days in Eligibility Period - Days Outside Canada</strong><br>
+                            Only trips that fall within your 5-year eligibility period are counted.</p>
+                        </div>
+                        <div class="explanation-card">
+                            <h4>⚖️ Official Requirements</h4>
+                            <p>This calculator follows the official Government of Canada requirements. You must also have at least 730 days as a permanent resident within the 5-year period.</p>
+                        </div>
+                        <div class="explanation-card">
+                            <h4>💡 Pro Tip</h4>
+                            <p>The government recommends applying with more than 1,095 days to account for any calculation discrepancies. Aim for 1,200+ days for peace of mind!</p>
+                        </div>
+                    </div>
+                    <div class="disclaimer">
+                        <p><strong>⚠️ Disclaimer:</strong> This calculator provides estimates based on your input. Always verify your eligibility using the official Government of Canada Physical Presence Calculator before applying.</p>
                     </div>
                 </div>
             </section>
