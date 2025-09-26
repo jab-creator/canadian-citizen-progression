@@ -294,6 +294,8 @@ class CitizenshipTracker {
         const today = new Date();
         const eligibilityDate = new Date(today);
         eligibilityDate.setDate(today.getDate() + daysNeeded);
+        // Set to end of day (11:59:59 PM) to show proper countdown
+        eligibilityDate.setHours(23, 59, 59, 999);
         
         return eligibilityDate;
     }
