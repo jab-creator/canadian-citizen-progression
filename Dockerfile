@@ -1,17 +1,17 @@
-FROM node:20
+# Simple static site server
+FROM python:3.12-slim
 
-# Create app directory
-WORKDIR /usr/src/app
+# Create non-root user (safer)
+RUN useradd -m appuser
 
-# Install dependencies
-COPY package*.json ./
-RUN npm ci
+WORKDIR /site
+COPY . /site
 
-# Copy source files
-COPY . .
+# If your site lives in a subfolder (e.g., /site/citizenship-tracker-app),
+# you can either COPY that folder only, or set --directory below.
 
-# Expose internal port
-EXPOSE 3000
+EXPOSE 8000
 
-# Run the app
-CMD ["node", "server.js"]
+USER appuser
+# Serve everything in /site at 0.0.0.0:8000
+CMD ["python", "-m", "http.server", "8000", "--bind", "0.0.0.0"]
