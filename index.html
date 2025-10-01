@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canadian Citizenship Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍁 Canadian Citizenship Tracker 🍁</h1>
+            <p>Track your progress towards Canadian citizenship eligibility</p>
+        </header>
+
+        <main>
+            <!-- Dashboard Section -->
+            <section class="dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Days in Canada</h3>
+                            <div class="stat-number" id="daysInCanada">0</div>
+                            <div class="stat-subtitle">out of 1,095 required</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card secondary">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Days Remaining</h3>
+                            <div class="stat-number" id="daysRemaining">1095</div>
+                            <div class="stat-subtitle">until eligibility</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card accent">
+                        <div class="stat-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Progress</h3>
+                            <div class="stat-number" id="progressPercent">0%</div>
+                            <div class="stat-subtitle">towards goal</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card info">
+                        <div class="stat-icon">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Total Trips</h3>
+                            <div class="stat-number" id="totalTrips">0</div>
+                            <div class="stat-subtitle">recorded</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card warning">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Days Outside</h3>
+                            <div class="stat-number" id="totalTripDays">0</div>
+                            <div class="stat-subtitle">total trip days</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-section">
+                    <h3>Citizenship Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                        <div class="progress-text" id="progressText">0 / 1,095 days</div>
+                    </div>
+                </div>
+
+                <!-- Countdown -->
+                <div class="countdown-section">
+                    <h3>Estimated Eligibility Date</h3>
+                    <div class="countdown" id="countdown">
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="countdownDays">0</span>
+                            <span class="countdown-label">Days</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="countdownHours">0</span>
+                            <span class="countdown-label">Hours</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="countdownMinutes">0</span>
+                            <span class="countdown-label">Minutes</span>
+                        </div>
+                        <div class="countdown-item">
+                            <span class="countdown-number" id="countdownSeconds">0</span>
+                            <span class="countdown-label">Seconds</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Navigation Tabs -->
+            <nav class="tabs">
+                <button class="tab-button active" data-tab="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </button>
+                <button class="tab-button" data-tab="trips">
+                    <i class="fas fa-plane"></i> Trips
+                </button>
+                <button class="tab-button" data-tab="settings">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
+                <button class="tab-button" data-tab="data">
+                    <i class="fas fa-database"></i> Data
+                </button>
+            </nav>
+
+            <!-- Trips Section -->
+            <section class="content-section" id="trips-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Trip Management</h2>
+                    <button class="btn btn-primary" id="addTripBtn">
+                        <i class="fas fa-plus"></i> Add Trip
+                    </button>
+                </div>
+
+                <div class="trips-list" id="tripsList">
+                    <div class="empty-state">
+                        <i class="fas fa-plane"></i>
+                        <h3>No trips recorded yet</h3>
+                        <p>Add your first trip to start tracking your time outside Canada</p>
+                    </div>
+                </div>
+
+                <!-- Calculation Explanation -->
+                <div class="calculation-explanation">
+                    <h3>🧮 How Your Eligibility is Calculated</h3>
+                    <div class="explanation-grid">
+                        <div class="explanation-card">
+                            <h4>📅 5-Year Eligibility Period</h4>
+                            <p>Your eligibility is calculated based on the 5 years immediately before your application date. If you've been a permanent resident for less than 5 years, we use your PR date as the start.</p>
+                        </div>
+                        <div class="explanation-card">
+                            <h4>🏠 1,095 Days Required</h4>
+                            <p>You must be physically present in Canada for at least 1,095 days (3 years) during your 5-year eligibility period. This is the minimum requirement for citizenship.</p>
+                        </div>
+                        <div class="explanation-card">
+                            <h4>✈️ Trip Calculations</h4>
+                            <p>Each trip you record reduces your days in Canada. We calculate the exact overlap between your trips and your eligibility period to give you accurate numbers.</p>
+                        </div>
+                        <div class="explanation-card">
+                            <h4>🎯 Days in Canada Formula</h4>
+                            <p><strong>Days in Canada = Total Days in Eligibility Period - Days Outside Canada</strong><br>
+                            Only trips that fall within your 5-year eligibility period are counted.</p>
+                        </div>
+                        <div class="explanation-card">
+                            <h4>⚖️ Official Requirements</h4>
+                            <p>This calculator follows the official Government of Canada requirements. You must also have at least 730 days as a permanent resident within the 5-year period.</p>
+                        </div>
+                        <div class="explanation-card">
+                            <h4>💡 Pro Tip</h4>
+                            <p>The government recommends applying with more than 1,095 days to account for any calculation discrepancies. Aim for 1,200+ days for peace of mind!</p>
+                        </div>
+                    </div>
+                    <div class="disclaimer">
+                        <p><strong>⚠️ Disclaimer:</strong> This calculator provides estimates based on your input. Always verify your eligibility using the official Government of Canada Physical Presence Calculator before applying.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section class="content-section" id="settings-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Settings</h2>
+                </div>
+
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label for="prDate">Permanent Resident Date</label>
+                        <input type="date" id="prDate" class="form-input">
+                        <small>The date you became a permanent resident of Canada</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="targetDate">Target Application Date</label>
+                        <input type="date" id="targetDate" class="form-input">
+                        <small>When you plan to apply for citizenship (optional)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="residencyStatus">Current Status</label>
+                        <select id="residencyStatus" class="form-input">
+                            <option value="permanent">Permanent Resident</option>
+                            <option value="temporary">Temporary Resident</option>
+                            <option value="protected">Protected Person</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary" id="saveSettingsBtn">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                </div>
+            </section>
+
+            <!-- Data Management Section -->
+            <section class="content-section" id="data-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Data Management</h2>
+                </div>
+
+                <div class="data-actions">
+                    <div class="action-card">
+                        <h3><i class="fas fa-download"></i> Export Data</h3>
+                        <p>Download your trip data and settings as a JSON file</p>
+                        <button class="btn btn-secondary" id="exportBtn">Export Data</button>
+                    </div>
+
+                    <div class="action-card">
+                        <h3><i class="fas fa-upload"></i> Import Data</h3>
+                        <p>Upload a previously exported JSON file to restore your data</p>
+                        <input type="file" id="importFile" accept=".json" style="display: none;">
+                        <button class="btn btn-secondary" id="importBtn">Import Data</button>
+                    </div>
+
+                    <div class="action-card danger">
+                        <h3><i class="fas fa-trash"></i> Clear All Data</h3>
+                        <p>Remove all trips and settings (this cannot be undone)</p>
+                        <button class="btn btn-danger" id="clearDataBtn">Clear All Data</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Trip Modal -->
+        <div class="modal" id="tripModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Add Trip</h3>
+                    <button class="modal-close" id="closeModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="tripForm">
+                    <div class="form-group">
+                        <label for="departureDate">Departure Date</label>
+                        <input type="date" id="departureDate" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="returnDate">Return Date</label>
+                        <input type="date" id="returnDate" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="destination">Destination</label>
+                        <input type="text" id="destination" class="form-input" placeholder="e.g., United States, India, etc." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reason">Reason for Travel</label>
+                        <select id="reason" class="form-input" required>
+                            <option value="">Select a reason</option>
+                            <option value="vacation">Vacation/Tourism</option>
+                            <option value="business">Business</option>
+                            <option value="family">Family Visit</option>
+                            <option value="medical">Medical</option>
+                            <option value="education">Education</option>
+                            <option value="emergency">Emergency</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="otherReasonGroup" style="display: none;">
+                        <label for="otherReason">Other Reason</label>
+                        <input type="text" id="otherReason" class="form-input" placeholder="Please specify">
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="saveTripBtn">Save Trip</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Overlay -->
+        <div class="overlay" id="overlay"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
