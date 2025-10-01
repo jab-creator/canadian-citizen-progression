@@ -47,18 +47,23 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             set -e
-            TAG=${GITHUB_SHA::7}
-            APP_PATH=${{ secrets.APP_PATH }}
+
+            # Compute tag from GitHub context (available at workflow runtime)
+            TAG=${{ github.sha }}
+            TAG=${TAG:0:7}
+
             IMAGE="${{ env.IMAGE }}:${TAG}"
             NAME="${{ env.CONTAINER_NAME }}"
             INT=${{ env.INTERNAL_PORT }}
             PUB=${{ env.PUBLIC_PORT }}
 
-            # Allow web traffic (first time only)
-            sudo ufw allow ${PUB}/tcp || true
+            # (Run once manually on the server: sudo ufw allow 80/tcp)
+            # Or keep this with no-password sudo configured:
+            # sudo -n ufw allow ${PUB}/tcp || true
 
-            # Login & pull new image
-            docker login ${{ env.REGISTRY }} -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+            # Safer docker login
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+
             docker pull "$IMAGE"
 
             # Stop/remove previous container if it exists
