@@ -53,16 +53,16 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
 
             # Pull latest images
-            docker-compose -f docker-compose.prod.yml pull citizenship-tracker
+            docker compose -f docker-compose.prod.yml pull citizenship-tracker
 
-            # Deploy with zero-downtime using docker-compose
-            docker-compose -f docker-compose.prod.yml up -d --no-deps citizenship-tracker
+            # Deploy with zero-downtime using docker compose
+            docker compose -f docker-compose.prod.yml up -d --no-deps citizenship-tracker
 
             # Wait for health check
             echo "Waiting for application to be healthy..."
             timeout=60
             while [ $timeout -gt 0 ]; do
-              if docker-compose -f docker-compose.prod.yml exec -T citizenship-tracker curl -f http://localhost:8000 >/dev/null 2>&1; then
+              if docker compose -f docker-compose.prod.yml exec -T citizenship-tracker curl -f http://localhost:8000 >/dev/null 2>&1; then
                 echo "Application is healthy!"
                 break
               fi
@@ -73,12 +73,12 @@ jobs:
 
             if [ $timeout -le 0 ]; then
               echo "Application failed to become healthy within 60 seconds"
-              docker-compose -f docker-compose.prod.yml logs citizenship-tracker
+              docker compose -f docker-compose.prod.yml logs citizenship-tracker
               exit 1
             fi
 
             # Reload nginx to ensure it picks up any changes
-            docker-compose -f docker-compose.prod.yml exec nginx nginx -s reload
+            docker compose -f docker-compose.prod.yml exec nginx nginx -s reload
 
             # Clean up old images
             docker image prune -f

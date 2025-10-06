@@ -8,7 +8,7 @@ set -e
 echo "🔧 Fixing Docker installation conflicts..."
 
 # Check if Docker is already working
-if docker --version >/dev/null 2>&1 && docker-compose --version >/dev/null 2>&1; then
+if docker --version >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
     echo "✅ Docker and Docker Compose are already installed and working!"
 else
     echo "🐳 Fixing Docker installation..."
@@ -69,4 +69,4 @@ echo "Next steps:"
 echo "1. Log out and SSH back in"
 echo "2. Edit scripts/init-letsencrypt.sh and update the email address"
 echo "3. Run: cd /opt/citizenship-tracker && ./scripts/init-letsencrypt.sh"
-echo "4. Run: docker-compose -f docker-compose.prod.yml up -d"
+echo "4. Run: docker compose -f docker-compose.prod.yml up -d"

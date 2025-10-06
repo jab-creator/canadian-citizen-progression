@@ -16,12 +16,12 @@ fi
 
 # Check Docker services
 echo "🐳 Checking Docker services..."
-docker-compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml ps
 
 # Check application health
 echo ""
 echo "🔍 Checking application health..."
-if docker-compose -f docker-compose.prod.yml exec -T citizenship-tracker curl -f http://localhost:8000 >/dev/null 2>&1; then
+if docker compose -f docker-compose.prod.yml exec -T citizenship-tracker curl -f http://localhost:8000 >/dev/null 2>&1; then
     echo "✅ Application is healthy"
 else
     echo "❌ Application health check failed"
@@ -30,7 +30,7 @@ fi
 # Check Nginx configuration
 echo ""
 echo "🌐 Checking Nginx configuration..."
-if docker-compose -f docker-compose.prod.yml exec nginx nginx -t >/dev/null 2>&1; then
+if docker compose -f docker-compose.prod.yml exec nginx nginx -t >/dev/null 2>&1; then
     echo "✅ Nginx configuration is valid"
 else
     echo "❌ Nginx configuration has errors"
