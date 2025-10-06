@@ -1,0 +1,40 @@
+# SSL certificates and keys
+certbot/
+nginx/dhparam.pem
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Docker volumes
+nginx-logs/
+
+# Backup files
+*.backup
+*.bak
+letsencrypt-backup-*.tar.gz
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+temp/
