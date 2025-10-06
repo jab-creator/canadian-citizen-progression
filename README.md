@@ -40,12 +40,15 @@ The application implements the official Canadian citizenship requirements:
 
 ## 🚀 Getting Started
 
-### Option 1: Simple File Opening
+### Option 1: Visit the Live Site
+Visit **[https://citizenshiptracker.ca](https://citizenshiptracker.ca)** to start tracking your citizenship journey immediately!
+
+### Option 2: Simple File Opening
 1. Download all files (`index.html`, `styles.css`, `script.js`)
 2. Open `index.html` in any modern web browser
 3. Start tracking your citizenship journey!
 
-### Option 2: Local Web Server
+### Option 3: Local Web Server
 ```bash
 # Using Python (recommended)
 python -m http.server 8000
@@ -58,6 +61,16 @@ php -S localhost:8000
 ```
 
 Then visit `http://localhost:8000` in your browser.
+
+### Option 4: Docker Deployment
+```bash
+# Simple single container
+docker build -t citizenship-tracker .
+docker run -p 8000:8000 citizenship-tracker
+
+# Full production setup with HTTPS
+docker-compose -f docker-compose.prod.yml up -d
+```
 
 ## 📱 How to Use
 

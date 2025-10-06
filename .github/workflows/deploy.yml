@@ -1,4 +1,4 @@
-name: Build & Deploy (Python http.server)
+name: Build & Deploy with HTTPS
 
 on:
   push:
@@ -8,9 +8,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE: ghcr.io/${{ github.repository }}
-  CONTAINER_NAME: citizenship-tracker
-  INTERNAL_PORT: 8000
-  PUBLIC_PORT: 80
+  COMPOSE_PROJECT: citizenship-tracker
 
 jobs:
   build-and-deploy:
@@ -48,35 +46,41 @@ jobs:
           script: |
             set -e
 
-            # Compute tag from GitHub context (available at workflow runtime)
-            TAG=${{ github.sha }}
-            TAG=${TAG:0:7}
+            # Navigate to deployment directory
+            cd /opt/citizenship-tracker || { echo "Deployment directory not found. Please run initial setup first."; exit 1; }
 
-            IMAGE="${{ env.IMAGE }}:${TAG}"
-            NAME="${{ env.CONTAINER_NAME }}"
-            INT=${{ env.INTERNAL_PORT }}
-            PUB=${{ env.PUBLIC_PORT }}
-
-            # (Run once manually on the server: sudo ufw allow 80/tcp)
-            # Or keep this with no-password sudo configured:
-            # sudo -n ufw allow ${PUB}/tcp || true
-
-            # Safer docker login
+            # Login to container registry
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
 
-            docker pull "$IMAGE"
+            # Pull latest images
+            docker-compose -f docker-compose.prod.yml pull citizenship-tracker
 
-            # Stop/remove previous container if it exists
-            if [ "$(docker ps -aq -f name=^${NAME}$)" ]; then
-              docker rm -f "$NAME" || true
+            # Deploy with zero-downtime using docker-compose
+            docker-compose -f docker-compose.prod.yml up -d --no-deps citizenship-tracker
+
+            # Wait for health check
+            echo "Waiting for application to be healthy..."
+            timeout=60
+            while [ $timeout -gt 0 ]; do
+              if docker-compose -f docker-compose.prod.yml exec -T citizenship-tracker curl -f http://localhost:8000 >/dev/null 2>&1; then
+                echo "Application is healthy!"
+                break
+              fi
+              echo "Waiting for application... ($timeout seconds remaining)"
+              sleep 5
+              timeout=$((timeout - 5))
+            done
+
+            if [ $timeout -le 0 ]; then
+              echo "Application failed to become healthy within 60 seconds"
+              docker-compose -f docker-compose.prod.yml logs citizenship-tracker
+              exit 1
             fi
 
-            # Run the new container
-            docker run -d \
-              --name "$NAME" \
-              --restart unless-stopped \
-              -p "${PUB}:${INT}" \
-              "$IMAGE"
+            # Reload nginx to ensure it picks up any changes
+            docker-compose -f docker-compose.prod.yml exec nginx nginx -s reload
 
             # Clean up old images
             docker image prune -f
+
+            echo "Deployment completed successfully!"
