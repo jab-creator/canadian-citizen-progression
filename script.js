@@ -37,6 +37,12 @@ class CitizenshipTracker {
     saveData() {
         localStorage.setItem('citizenship-trips', JSON.stringify(this.trips));
         localStorage.setItem('citizenship-settings', JSON.stringify(this.settings));
+        
+        // Sync to cloud if available
+        if (window.firebaseSync) {
+            window.firebaseSync.syncTrips(this.trips);
+            window.firebaseSync.syncSettings(this.settings);
+        }
     }
 
     populateSettings() {
@@ -307,28 +313,41 @@ class CitizenshipTracker {
     }
 
     // Dashboard Updates
-    updateDashboard() {
+    calculateStats() {
         const calculation = this.calculateDaysInCanada();
         const daysInCanada = calculation.daysInCanada;
         const daysRemaining = Math.max(0, 1095 - daysInCanada);
-        const progressPercent = Math.min(100, (daysInCanada / 1095) * 100);
+        const progressPercentage = Math.min(100, (daysInCanada / 1095) * 100);
         const totalTripDays = this.calculateTotalTripDays();
 
+        return {
+            daysInCanada,
+            daysRemaining,
+            progressPercentage,
+            totalTrips: this.trips.length,
+            totalTripDays,
+            isPRDateSet: !!this.settings.prDate
+        };
+    }
+
+    updateDashboard() {
+        const stats = this.calculateStats();
+
         // Update stats
-        document.getElementById('daysInCanada').textContent = daysInCanada.toLocaleString();
-        document.getElementById('daysRemaining').textContent = daysRemaining.toLocaleString();
-        document.getElementById('progressPercent').textContent = `${progressPercent.toFixed(1)}%`;
-        document.getElementById('totalTrips').textContent = this.trips.length;
+        document.getElementById('daysInCanada').textContent = stats.daysInCanada.toLocaleString();
+        document.getElementById('daysRemaining').textContent = stats.daysRemaining.toLocaleString();
+        document.getElementById('progressPercent').textContent = `${stats.progressPercentage.toFixed(1)}%`;
+        document.getElementById('totalTrips').textContent = stats.totalTrips;
         
         // Update total trip days if element exists
         const totalTripDaysElement = document.getElementById('totalTripDays');
         if (totalTripDaysElement) {
-            totalTripDaysElement.textContent = totalTripDays.toLocaleString();
+            totalTripDaysElement.textContent = stats.totalTripDays.toLocaleString();
         }
 
         // Update progress bar
-        document.getElementById('progressFill').style.width = `${progressPercent}%`;
-        document.getElementById('progressText').textContent = `${daysInCanada.toLocaleString()} / 1,095 days`;
+        document.getElementById('progressFill').style.width = `${stats.progressPercentage}%`;
+        document.getElementById('progressText').textContent = `${stats.daysInCanada.toLocaleString()} / 1,095 days`;
 
         // Update countdown
         this.updateCountdown();
@@ -471,3 +490,4 @@ class CitizenshipTracker {
 
 // Initialize the application
 const app = new CitizenshipTracker();
+window.citizenshipTracker = app;
