@@ -109,7 +109,19 @@ class FirebaseAuthManager {
             }
         } catch (error) {
             console.error('Google sign in error:', error);
-            this.showErrorMessage('Failed to sign in with Google. Please try again.');
+            console.error('Error code:', error.code);
+            console.error('Error message:', error.message);
+            
+            // More specific error messages
+            if (error.code === 'auth/unauthorized-domain') {
+                this.showErrorMessage('This domain is not authorized for authentication. Please contact support.');
+            } else if (error.code === 'auth/popup-blocked') {
+                this.showErrorMessage('Popup was blocked. Please allow popups and try again.');
+            } else if (error.code === 'auth/popup-closed-by-user') {
+                this.showErrorMessage('Sign-in was cancelled. Please try again.');
+            } else {
+                this.showErrorMessage(`Failed to sign in with Google: ${error.message}`);
+            }
         }
     }
 
