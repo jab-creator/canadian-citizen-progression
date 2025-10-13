@@ -10,8 +10,41 @@
 <body>
     <div class="container">
         <header>
-            <h1>🍁 Canadian Citizenship Tracker 🍁</h1>
-            <p>Track your progress towards Canadian citizenship eligibility</p>
+            <div class="header-content">
+                <div class="header-title">
+                    <h1>🍁 Canadian Citizenship Tracker 🍁</h1>
+                    <p>Track your progress towards Canadian citizenship eligibility</p>
+                </div>
+                <div class="header-actions">
+                    <div id="authSection">
+                        <!-- When not logged in -->
+                        <div id="signInSection" class="auth-section">
+                            <button class="btn btn-primary" id="signInBtn">
+                                <i class="fas fa-cloud"></i> Save to Cloud
+                            </button>
+                        </div>
+                        
+                        <!-- When logged in -->
+                        <div id="userSection" class="auth-section" style="display: none;">
+                            <div class="user-info">
+                                <div class="sync-status" id="syncStatus">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span id="syncText">Synced</span>
+                                </div>
+                                <div class="user-details">
+                                    <span id="userEmail">user@example.com</span>
+                                    <button class="btn btn-secondary btn-small" id="shareBtn">
+                                        <i class="fas fa-share"></i> Share
+                                    </button>
+                                    <button class="btn btn-secondary btn-small" id="signOutBtn">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </header>
 
         <main>
@@ -217,6 +250,27 @@
                 </div>
 
                 <div class="data-actions">
+                    <!-- Cloud Sync Section -->
+                    <div class="action-card cloud-sync" id="cloudSyncCard" style="display: none;">
+                        <h3><i class="fas fa-cloud-upload-alt"></i> Cloud Sync</h3>
+                        <p>Your data is automatically synced to the cloud when signed in</p>
+                        <div class="sync-status" id="syncStatus">
+                            <i class="fas fa-sync-alt"></i> <span>Ready to sync</span>
+                        </div>
+                        <button class="btn btn-primary" id="manualSyncBtn">
+                            <i class="fas fa-sync"></i> Sync Now
+                        </button>
+                    </div>
+
+                    <!-- Share Progress Section -->
+                    <div class="action-card share-progress" id="shareProgressCard" style="display: none;">
+                        <h3><i class="fas fa-share-alt"></i> Share Progress</h3>
+                        <p>Create a public link to share your citizenship progress</p>
+                        <button class="btn btn-success" id="shareProgressBtn">
+                            <i class="fas fa-link"></i> Generate Share Link
+                        </button>
+                    </div>
+
                     <div class="action-card">
                         <h3><i class="fas fa-download"></i> Export Data</h3>
                         <p>Download your trip data and settings as a JSON file</p>
@@ -291,10 +345,125 @@
             </div>
         </div>
 
+        <!-- Sign In Modal -->
+        <div class="modal" id="signInModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Save Your Data to the Cloud</h3>
+                    <button class="modal-close" id="closeSignInModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Sign in to save your citizenship tracking data to the cloud and access it from any device!</p>
+                    
+                    <div class="auth-options">
+                        <button class="btn btn-primary auth-btn" id="googleSignInBtn">
+                            <i class="fab fa-google"></i> Sign in with Google
+                        </button>
+                        
+                        <div class="auth-divider">
+                            <span>or</span>
+                        </div>
+                        
+                        <div class="email-auth">
+                            <div class="form-group">
+                                <label for="emailInput">Email Address</label>
+                                <input type="email" id="emailInput" class="form-input" placeholder="your@email.com">
+                            </div>
+                            <button class="btn btn-secondary auth-btn" id="emailSignInBtn">
+                                <i class="fas fa-envelope"></i> Send Magic Link
+                            </button>
+                            <p class="auth-note">We'll send you a secure link to sign in - no password needed!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Share Modal -->
+        <div class="modal" id="shareModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Share Your Progress</h3>
+                    <button class="modal-close" id="closeShareModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Share your Canadian citizenship progress with others!</p>
+                    
+                    <div class="share-options">
+                        <div class="form-group">
+                            <label>Your Shareable Link:</label>
+                            <div class="share-link-container">
+                                <input type="text" id="shareLink" class="form-input" readonly>
+                                <button class="btn btn-secondary" id="copyLinkBtn">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="share-preview">
+                            <h4>Preview of what others will see:</h4>
+                            <div class="preview-card">
+                                <h5>🍁 Canadian Citizenship Progress</h5>
+                                <div class="preview-stats">
+                                    <div class="preview-stat">
+                                        <strong id="previewDays">0</strong> days in Canada
+                                    </div>
+                                    <div class="preview-stat">
+                                        <strong id="previewProgress">0%</strong> complete
+                                    </div>
+                                    <div class="preview-stat">
+                                        <strong id="previewTrips">0</strong> trips recorded
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="share-note">
+                            <p><i class="fas fa-info-circle"></i> Your personal trip details and dates are not shared - only your progress statistics.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Overlay -->
         <div class="overlay" id="overlay"></div>
     </div>
 
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPJXqFliu0bOCHr3FR-_IZX4SJ0brXZpE",
+            authDomain: "citizenship-tracker-4a2c2.firebaseapp.com",
+            projectId: "citizenship-tracker-4a2c2",
+            storageBucket: "citizenship-tracker-4a2c2.firebasestorage.app",
+            messagingSenderId: "1052062650855",
+            appId: "1:1052062650855:web:ddf87d2dd9d4898ffced42",
+            measurementId: "G-G00ZMYBL49"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // Make Firebase available globally
+        window.firebaseApp = app;
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+    </script>
+    <script src="firebase-auth.js"></script>
+    <script src="firebase-sync.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

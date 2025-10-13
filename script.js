@@ -37,6 +37,12 @@ class CitizenshipTracker {
     saveData() {
         localStorage.setItem('citizenship-trips', JSON.stringify(this.trips));
         localStorage.setItem('citizenship-settings', JSON.stringify(this.settings));
+        
+        // Sync to cloud if available
+        if (window.firebaseSync) {
+            window.firebaseSync.syncTrips(this.trips);
+            window.firebaseSync.syncSettings(this.settings);
+        }
     }
 
     populateSettings() {
@@ -71,6 +77,10 @@ class CitizenshipTracker {
         document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
         document.getElementById('importFile').addEventListener('change', (e) => this.importData(e));
         document.getElementById('clearDataBtn').addEventListener('click', () => this.clearAllData());
+        
+        // Cloud sync event listeners
+        document.getElementById('manualSyncBtn').addEventListener('click', () => this.manualSync());
+        document.getElementById('shareProgressBtn').addEventListener('click', () => this.generateShareLink());
 
         // Form interactions
         document.getElementById('reason').addEventListener('change', (e) => {
@@ -307,28 +317,41 @@ class CitizenshipTracker {
     }
 
     // Dashboard Updates
-    updateDashboard() {
+    calculateStats() {
         const calculation = this.calculateDaysInCanada();
         const daysInCanada = calculation.daysInCanada;
         const daysRemaining = Math.max(0, 1095 - daysInCanada);
-        const progressPercent = Math.min(100, (daysInCanada / 1095) * 100);
+        const progressPercentage = Math.min(100, (daysInCanada / 1095) * 100);
         const totalTripDays = this.calculateTotalTripDays();
 
+        return {
+            daysInCanada,
+            daysRemaining,
+            progressPercentage,
+            totalTrips: this.trips.length,
+            totalTripDays,
+            isPRDateSet: !!this.settings.prDate
+        };
+    }
+
+    updateDashboard() {
+        const stats = this.calculateStats();
+
         // Update stats
-        document.getElementById('daysInCanada').textContent = daysInCanada.toLocaleString();
-        document.getElementById('daysRemaining').textContent = daysRemaining.toLocaleString();
-        document.getElementById('progressPercent').textContent = `${progressPercent.toFixed(1)}%`;
-        document.getElementById('totalTrips').textContent = this.trips.length;
+        document.getElementById('daysInCanada').textContent = stats.daysInCanada.toLocaleString();
+        document.getElementById('daysRemaining').textContent = stats.daysRemaining.toLocaleString();
+        document.getElementById('progressPercent').textContent = `${stats.progressPercentage.toFixed(1)}%`;
+        document.getElementById('totalTrips').textContent = stats.totalTrips;
         
         // Update total trip days if element exists
         const totalTripDaysElement = document.getElementById('totalTripDays');
         if (totalTripDaysElement) {
-            totalTripDaysElement.textContent = totalTripDays.toLocaleString();
+            totalTripDaysElement.textContent = stats.totalTripDays.toLocaleString();
         }
 
         // Update progress bar
-        document.getElementById('progressFill').style.width = `${progressPercent}%`;
-        document.getElementById('progressText').textContent = `${daysInCanada.toLocaleString()} / 1,095 days`;
+        document.getElementById('progressFill').style.width = `${stats.progressPercentage}%`;
+        document.getElementById('progressText').textContent = `${stats.daysInCanada.toLocaleString()} / 1,095 days`;
 
         // Update countdown
         this.updateCountdown();
@@ -458,6 +481,107 @@ class CitizenshipTracker {
         }
     }
 
+    // Manual sync to cloud
+    async manualSync() {
+        if (!window.firebaseSync || !window.firebaseSync.auth.currentUser) {
+            this.showToast('Please sign in to sync your data', 'error');
+            return;
+        }
+
+        try {
+            // Update sync status
+            const syncStatus = document.getElementById('syncStatus');
+            syncStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Syncing...</span>';
+            
+            // Trigger sync
+            await window.firebaseSync.syncToCloud();
+            
+            // Update sync status
+            syncStatus.innerHTML = '<i class="fas fa-check-circle"></i> <span>Synced successfully</span>';
+            this.showToast('Data synced to cloud successfully!', 'success');
+            
+            // Reset status after 3 seconds
+            setTimeout(() => {
+                syncStatus.innerHTML = '<i class="fas fa-sync-alt"></i> <span>Ready to sync</span>';
+            }, 3000);
+            
+        } catch (error) {
+            console.error('Error syncing data:', error);
+            const syncStatus = document.getElementById('syncStatus');
+            syncStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span>Sync failed</span>';
+            this.showToast('Failed to sync data. Please try again.', 'error');
+            
+            // Reset status after 3 seconds
+            setTimeout(() => {
+                syncStatus.innerHTML = '<i class="fas fa-sync-alt"></i> <span>Ready to sync</span>';
+            }, 3000);
+        }
+    }
+
+    // Generate share link
+    async generateShareLink() {
+        if (!window.firebaseSync || !window.firebaseSync.auth.currentUser) {
+            this.showToast('Please sign in to share your progress', 'error');
+            return;
+        }
+
+        try {
+            // Generate a unique share ID (using user ID for simplicity)
+            const shareId = window.firebaseSync.auth.currentUser.uid;
+            
+            // Create the public share document
+            await window.firebaseSync.createPublicShare(shareId);
+            
+            const shareUrl = `${window.location.origin}/share.html?id=${shareId}`;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                this.showToast('Share link created and copied to clipboard!', 'success');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = shareUrl;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                this.showToast('Share link created and copied to clipboard!', 'success');
+            });
+
+            // Update the share modal with the link
+            const shareInput = document.getElementById('shareUrlInput');
+            if (shareInput) {
+                shareInput.value = shareUrl;
+            }
+        } catch (error) {
+            console.error('Error creating share link:', error);
+            this.showToast('Failed to create share link. Please try again.', 'error');
+        }
+    }
+
+    // Show toast notification
+    showToast(message, type = 'info') {
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+            <span>${message}</span>
+        `;
+        
+        // Add to page
+        document.body.appendChild(toast);
+        
+        // Show with animation
+        setTimeout(() => toast.classList.add('show'), 100);
+        
+        // Remove after delay
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => document.body.removeChild(toast), 300);
+        }, 3000);
+    }
+
     // Utility Functions
     formatDate(dateString) {
         const date = new Date(dateString);
@@ -471,3 +595,4 @@ class CitizenshipTracker {
 
 // Initialize the application
 const app = new CitizenshipTracker();
+window.citizenshipTracker = app;

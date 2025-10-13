@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canadian Citizenship Progress - Shared</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Additional styles for share page */
+        .share-page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .share-header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        
+        .share-header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .share-header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .shared-stats {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .shared-stats h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #1f2937;
+            font-size: 1.5rem;
+        }
+        
+        .shared-progress {
+            margin-bottom: 30px;
+        }
+        
+        .progress-bar {
+            background: #f3f4f6;
+            border-radius: 25px;
+            height: 20px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            border-radius: 25px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            text-align: center;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .shared-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .shared-stat-item {
+            text-align: center;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .shared-stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+        
+        .shared-stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        
+        .share-footer {
+            text-align: center;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .share-footer p {
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #fa3737, #ff6b6b);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+        
+        .loading i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+        
+        .error i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #ef4444;
+        }
+        
+        .error h2 {
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        .error p {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="share-page">
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            <i class="fas fa-spinner"></i>
+            <h2>Loading citizenship progress...</h2>
+            <p>Please wait while we fetch the shared data.</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="error" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Unable to Load Data</h2>
+            <p>This shared link may be invalid or the data is no longer available.</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="successState" style="display: none;">
+            <div class="share-header">
+                <h1>🍁 Canadian Citizenship Progress 🍁</h1>
+                <p>Someone shared their citizenship journey with you!</p>
+            </div>
+
+            <div class="shared-stats">
+                <h2>Progress Overview</h2>
+                
+                <div class="shared-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="sharedProgressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text" id="sharedProgressText">0 / 1,095 days</div>
+                </div>
+
+                <div class="shared-stats-grid">
+                    <div class="shared-stat-item">
+                        <div class="shared-stat-number" id="sharedDaysInCanada">0</div>
+                        <div class="shared-stat-label">Days in Canada</div>
+                    </div>
+                    
+                    <div class="shared-stat-item">
+                        <div class="shared-stat-number" id="sharedProgressPercent">0%</div>
+                        <div class="shared-stat-label">Progress Complete</div>
+                    </div>
+                    
+                    <div class="shared-stat-item">
+                        <div class="shared-stat-number" id="sharedDaysRemaining">1,095</div>
+                        <div class="shared-stat-label">Days Remaining</div>
+                    </div>
+                    
+                    <div class="shared-stat-item">
+                        <div class="shared-stat-number" id="sharedTotalTrips">0</div>
+                        <div class="shared-stat-label">Trips Recorded</div>
+                    </div>
+                </div>
+                
+                <div class="share-note">
+                    <p><i class="fas fa-info-circle"></i> This shows only progress statistics - personal trip details are kept private.</p>
+                </div>
+            </div>
+
+            <div class="share-footer">
+                <p>Want to track your own Canadian citizenship progress?</p>
+                <a href="index.html" class="cta-button">
+                    <i class="fas fa-rocket"></i> Start Your Journey
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPJXqFliu0bOCHr3FR-_IZX4SJ0brXZpE",
+            authDomain: "citizenship-tracker-4a2c2.firebaseapp.com",
+            projectId: "citizenship-tracker-4a2c2",
+            storageBucket: "citizenship-tracker-4a2c2.firebasestorage.app",
+            messagingSenderId: "1052062650855",
+            appId: "1:1052062650855:web:ddf87d2dd9d4898ffced42",
+            measurementId: "G-G00ZMYBL49"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Make Firebase available globally
+        window.firebaseApp = app;
+        window.firebaseDb = db;
+    </script>
+    <script src="share.js"></script>
+</body>
+</html>

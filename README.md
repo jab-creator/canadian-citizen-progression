@@ -28,6 +28,19 @@ A beautiful, interactive web application to track your progress towards Canadian
 - **Local Storage**: Automatic saving of all your data in your browser
 - **Clear Data**: Option to reset everything (with confirmation prompts)
 
+### ☁️ Cloud Storage & Sync (NEW!)
+- **Save to Cloud**: Sign in with Google or passwordless email to backup your data
+- **Cross-Device Sync**: Access your data from any device after signing in
+- **Automatic Backup**: Your trips and settings are automatically saved to the cloud
+- **Offline Support**: Works offline and syncs when you're back online
+- **Data Migration**: Seamlessly migrate existing local data to the cloud
+
+### 🔗 Sharing Features (NEW!)
+- **Share Your Progress**: Generate shareable links to show your citizenship journey
+- **Privacy-First**: Only progress stats are shared, not personal trip details
+- **Public View**: Beautiful public page showing days in Canada, progress %, and trip count
+- **Easy Sharing**: Copy link to clipboard and share with family, friends, or immigration consultants
+
 ## 🧮 Calculation Logic
 
 The application implements the official Canadian citizenship requirements:
@@ -62,7 +75,17 @@ php -S localhost:8000
 
 Then visit `http://localhost:8000` in your browser.
 
-### Option 4: Docker Deployment
+### Option 4: Cloud-Enabled Setup (Recommended)
+To enable cloud storage and sharing features:
+
+1. **Set up Firebase** (see [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for detailed instructions)
+2. **Configure your Firebase project** with Authentication and Firestore
+3. **Update the Firebase configuration** in `index.html` and `share.html`
+4. **Deploy to Firebase Hosting** (optional) for custom sharing URLs
+
+**Cost**: Free tier supports thousands of users. Paid tier starts at ~$1/month.
+
+### Option 5: Docker Deployment
 ```bash
 # Simple single container
 docker build -t citizenship-tracker .
@@ -110,18 +133,21 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ## 🔒 Privacy & Security
 
-- **100% Client-Side**: All data stays in your browser
-- **No Server Required**: Works completely offline after initial load
-- **Local Storage Only**: No data is sent to external servers
+- **Privacy-First Design**: Personal trip details are never shared publicly
+- **Secure Authentication**: Google Sign-In and passwordless email authentication
+- **Encrypted Cloud Storage**: Data is securely stored in Firebase with user-specific access controls
+- **Offline-First**: Works completely offline, syncs when online
 - **Export Control**: You control your data with export/import features
+- **No Tracking**: No analytics or tracking of personal information
 
 ## 🌟 Technical Details
 
-- **Pure HTML/CSS/JavaScript**: No frameworks or dependencies
+- **Pure HTML/CSS/JavaScript**: No frameworks or dependencies (except Firebase SDK)
 - **Modern Browser Support**: Works in all modern browsers
-- **Local Storage API**: Persistent data storage
+- **Firebase Integration**: Cloud storage, authentication, and real-time sync
+- **Offline-First Architecture**: Works without internet, syncs when available
 - **Responsive CSS Grid**: Flexible layout system
-- **ES6+ JavaScript**: Modern JavaScript features
+- **ES6+ JavaScript**: Modern JavaScript features with modules
 
 ## 📋 Requirements Compliance
 
