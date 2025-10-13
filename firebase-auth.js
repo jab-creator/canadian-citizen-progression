@@ -187,16 +187,26 @@ class FirebaseAuthManager {
         const signInSection = document.getElementById('signInSection');
         const userSection = document.getElementById('userSection');
         const userEmail = document.getElementById('userEmail');
+        const cloudSyncCard = document.getElementById('cloudSyncCard');
+        const shareProgressCard = document.getElementById('shareProgressCard');
 
         if (this.user) {
             // User is signed in
             signInSection.style.display = 'none';
             userSection.style.display = 'block';
             userEmail.textContent = this.user.email;
+            
+            // Show cloud features
+            if (cloudSyncCard) cloudSyncCard.style.display = 'block';
+            if (shareProgressCard) shareProgressCard.style.display = 'block';
         } else {
             // User is signed out
             signInSection.style.display = 'block';
             userSection.style.display = 'none';
+            
+            // Hide cloud features
+            if (cloudSyncCard) cloudSyncCard.style.display = 'none';
+            if (shareProgressCard) shareProgressCard.style.display = 'none';
         }
     }
 

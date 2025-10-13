@@ -77,6 +77,10 @@ class CitizenshipTracker {
         document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
         document.getElementById('importFile').addEventListener('change', (e) => this.importData(e));
         document.getElementById('clearDataBtn').addEventListener('click', () => this.clearAllData());
+        
+        // Cloud sync event listeners
+        document.getElementById('manualSyncBtn').addEventListener('click', () => this.manualSync());
+        document.getElementById('shareProgressBtn').addEventListener('click', () => this.generateShareLink());
 
         // Form interactions
         document.getElementById('reason').addEventListener('change', (e) => {
@@ -474,6 +478,43 @@ class CitizenshipTracker {
                 
                 alert('All data has been cleared.');
             }
+        }
+    }
+
+    // Manual sync to cloud
+    async manualSync() {
+        if (!window.firebaseSync || !window.firebaseSync.auth.currentUser) {
+            this.showToast('Please sign in to sync your data', 'error');
+            return;
+        }
+
+        try {
+            // Update sync status
+            const syncStatus = document.getElementById('syncStatus');
+            syncStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Syncing...</span>';
+            
+            // Trigger sync
+            await window.firebaseSync.syncToCloud();
+            
+            // Update sync status
+            syncStatus.innerHTML = '<i class="fas fa-check-circle"></i> <span>Synced successfully</span>';
+            this.showToast('Data synced to cloud successfully!', 'success');
+            
+            // Reset status after 3 seconds
+            setTimeout(() => {
+                syncStatus.innerHTML = '<i class="fas fa-sync-alt"></i> <span>Ready to sync</span>';
+            }, 3000);
+            
+        } catch (error) {
+            console.error('Error syncing data:', error);
+            const syncStatus = document.getElementById('syncStatus');
+            syncStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span>Sync failed</span>';
+            this.showToast('Failed to sync data. Please try again.', 'error');
+            
+            // Reset status after 3 seconds
+            setTimeout(() => {
+                syncStatus.innerHTML = '<i class="fas fa-sync-alt"></i> <span>Ready to sync</span>';
+            }, 3000);
         }
     }
 
