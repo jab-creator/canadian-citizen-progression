@@ -477,6 +477,70 @@ class CitizenshipTracker {
         }
     }
 
+    // Generate share link
+    async generateShareLink() {
+        if (!window.firebaseSync || !window.firebaseSync.auth.currentUser) {
+            this.showToast('Please sign in to share your progress', 'error');
+            return;
+        }
+
+        try {
+            // Generate a unique share ID (using user ID for simplicity)
+            const shareId = window.firebaseSync.auth.currentUser.uid;
+            
+            // Create the public share document
+            await window.firebaseSync.createPublicShare(shareId);
+            
+            const shareUrl = `${window.location.origin}/share.html?id=${shareId}`;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                this.showToast('Share link created and copied to clipboard!', 'success');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = shareUrl;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                this.showToast('Share link created and copied to clipboard!', 'success');
+            });
+
+            // Update the share modal with the link
+            const shareInput = document.getElementById('shareUrlInput');
+            if (shareInput) {
+                shareInput.value = shareUrl;
+            }
+        } catch (error) {
+            console.error('Error creating share link:', error);
+            this.showToast('Failed to create share link. Please try again.', 'error');
+        }
+    }
+
+    // Show toast notification
+    showToast(message, type = 'info') {
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+            <span>${message}</span>
+        `;
+        
+        // Add to page
+        document.body.appendChild(toast);
+        
+        // Show with animation
+        setTimeout(() => toast.classList.add('show'), 100);
+        
+        // Remove after delay
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => document.body.removeChild(toast), 300);
+        }, 3000);
+    }
+
     // Utility Functions
     formatDate(dateString) {
         const date = new Date(dateString);

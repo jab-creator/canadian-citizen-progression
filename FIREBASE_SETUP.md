@@ -37,20 +37,36 @@ This guide will help you set up Firebase for cloud storage and sharing features 
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can only access their own data
-    match /users/{userId} {
+
+    // Private per-user data: /users/{uid}/...
+    match /users/{userId}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
-    
-    // Allow public read access for sharing (but not write)
-    match /users/{userId} {
+
+    // Public share snapshots: /shares/{shareId}
+    // Anyone can read; only the owner can write/update/delete
+    match /shares/{shareId} {
       allow read: if true;
+
+      // On create, require ownerId to match the caller
+      allow create: if request.auth != null
+                    && request.resource.data.ownerId == request.auth.uid;
+
+      // On update/delete, require existing ownerId to match the caller
+      allow update, delete: if request.auth != null
+                            && resource.data.ownerId == request.auth.uid;
     }
   }
 }
 ```
 
 3. Click **Publish**
+
+**Security Benefits:**
+- Private user data in `/users/{userId}/` is completely private
+- Public shares in `/shares/{shareId}` are explicitly published by users
+- Share documents include `ownerId` for access control
+- No accidental exposure of private data
 
 ## Step 5: Get Firebase Configuration
 

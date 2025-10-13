@@ -424,23 +424,53 @@ class FirebaseSyncManager {
         }
     }
 
-    // Get public data for sharing
-    async getPublicData(userId) {
+    // Create or update a public share
+    async createPublicShare(shareId) {
+        if (!this.auth.currentUser) {
+            throw new Error('User must be authenticated to create shares');
+        }
+
         try {
-            const userDocRef = this.doc(this.db, 'users', userId);
+            // Get current user data
+            const userDocRef = this.doc(this.db, 'users', this.auth.currentUser.uid);
             const userDoc = await this.getDoc(userDocRef);
             
             if (!userDoc.exists()) {
+                throw new Error('User data not found');
+            }
+
+            const userData = userDoc.data();
+            const stats = this.calculatePublicStats(userData.trips || [], userData.settings || {});
+            
+            // Create share document in public collection
+            const shareDocRef = this.doc(this.db, 'shares', shareId);
+            const shareData = {
+                ownerId: this.auth.currentUser.uid,
+                stats: stats,
+                createdAt: this.serverTimestamp(),
+                lastUpdated: this.serverTimestamp()
+            };
+
+            await this.setDoc(shareDocRef, shareData);
+            
+            return shareId;
+        } catch (error) {
+            console.error('Create public share error:', error);
+            throw error;
+        }
+    }
+
+    // Get public data for sharing
+    async getPublicData(shareId) {
+        try {
+            const shareDocRef = this.doc(this.db, 'shares', shareId);
+            const shareDoc = await this.getDoc(shareDocRef);
+            
+            if (!shareDoc.exists()) {
                 return null;
             }
 
-            const data = userDoc.data();
-            
-            // Return only public-safe data
-            return {
-                stats: this.calculatePublicStats(data.trips || [], data.settings || {}),
-                lastUpdated: data.lastUpdated
-            };
+            return shareDoc.data();
         } catch (error) {
             console.error('Get public data error:', error);
             return null;

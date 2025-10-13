@@ -74,18 +74,18 @@ class SharePageManager {
 
     async loadSharedData() {
         try {
-            const userDocRef = this.doc(this.db, 'users', this.shareId);
-            const userDoc = await this.getDoc(userDocRef);
+            const shareDocRef = this.doc(this.db, 'shares', this.shareId);
+            const shareDoc = await this.getDoc(shareDocRef);
             
-            if (!userDoc.exists()) {
+            if (!shareDoc.exists()) {
                 this.showError('Shared data not found');
                 return;
             }
 
-            const userData = userDoc.data();
-            const stats = this.calculatePublicStats(userData.trips || [], userData.settings || {});
+            const shareData = shareDoc.data();
             
-            this.displayStats(stats);
+            // The stats are already calculated and stored in the share document
+            this.displayStats(shareData.stats);
             this.showSuccess();
             
         } catch (error) {
@@ -94,33 +94,7 @@ class SharePageManager {
         }
     }
 
-    calculatePublicStats(trips, settings) {
-        const prDate = settings.prDate ? new Date(settings.prDate) : null;
-        const today = new Date();
-        
-        let daysOutside = 0;
-        let totalTrips = trips.length;
-        
-        trips.forEach(trip => {
-            const departure = new Date(trip.departureDate);
-            const returnDate = new Date(trip.returnDate);
-            const tripDays = Math.ceil((returnDate - departure) / (1000 * 60 * 60 * 24));
-            daysOutside += tripDays;
-        });
-        
-        const totalDaysSincePR = prDate ? Math.ceil((today - prDate) / (1000 * 60 * 60 * 24)) : 0;
-        const daysInCanada = Math.max(0, totalDaysSincePR - daysOutside);
-        const progressPercentage = Math.min(100, (daysInCanada / 1095) * 100);
-        const daysRemaining = Math.max(0, 1095 - daysInCanada);
-        
-        return {
-            daysInCanada,
-            progressPercentage,
-            daysRemaining,
-            totalTrips,
-            isPRDateSet: !!prDate
-        };
-    }
+
 
     displayStats(stats) {
         // Update progress bar
