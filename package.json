@@ -1,0 +1,31 @@
+{
+  "name": "canadian-citizenship-tracker-payment",
+  "version": "1.0.0",
+  "description": "Payment processing server for Canadian Citizenship Tracker",
+  "main": "payment-server.js",
+  "scripts": {
+    "start": "node payment-server.js",
+    "dev": "nodemon payment-server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "citizenship",
+    "tracker",
+    "payment",
+    "stripe",
+    "subscription"
+  ],
+  "author": "Canadian Citizenship Tracker",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "stripe": "^14.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
