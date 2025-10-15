@@ -38,8 +38,8 @@ class CitizenshipTracker {
         localStorage.setItem('citizenship-trips', JSON.stringify(this.trips));
         localStorage.setItem('citizenship-settings', JSON.stringify(this.settings));
         
-        // Sync to cloud if available
-        if (window.firebaseSync) {
+        // Sync to cloud if available and user has premium subscription
+        if (window.firebaseSync && window.paymentManager && window.paymentManager.hasFeature('cloudSync')) {
             window.firebaseSync.syncTrips(this.trips);
             window.firebaseSync.syncSettings(this.settings);
         }
@@ -81,6 +81,23 @@ class CitizenshipTracker {
         // Cloud sync event listeners
         document.getElementById('manualSyncBtn').addEventListener('click', () => this.manualSync());
         document.getElementById('shareProgressBtn').addEventListener('click', () => this.generateShareLink());
+
+        // Premium upgrade event listeners
+        document.getElementById('upgradeBtn')?.addEventListener('click', () => this.showUpgradeModal());
+        document.getElementById('closeUpgradeModal')?.addEventListener('click', () => this.closeUpgradeModal());
+        
+        // Payment button listeners
+        document.querySelectorAll('[data-price-id]').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const priceId = e.target.getAttribute('data-price-id');
+                this.startSubscription(priceId);
+            });
+        });
+
+        // Listen for subscription status changes
+        window.addEventListener('subscriptionStatusChanged', (e) => {
+            this.updateUIForSubscriptionStatus(e.detail);
+        });
 
         // Form interactions
         document.getElementById('reason').addEventListener('change', (e) => {
@@ -488,6 +505,12 @@ class CitizenshipTracker {
             return;
         }
 
+        // Check if user has premium subscription for cloud sync
+        if (!window.paymentManager || !window.paymentManager.hasFeature('cloudSync')) {
+            window.paymentManager?.showUpgradeModal('cloudSync');
+            return;
+        }
+
         try {
             // Update sync status
             const syncStatus = document.getElementById('syncStatus');
@@ -522,6 +545,12 @@ class CitizenshipTracker {
     async generateShareLink() {
         if (!window.firebaseSync || !window.firebaseSync.auth.currentUser) {
             this.showToast('Please sign in to share your progress', 'error');
+            return;
+        }
+
+        // Check if user has premium subscription for sharing
+        if (!window.paymentManager || !window.paymentManager.hasFeature('sharing')) {
+            window.paymentManager?.showUpgradeModal('sharing');
             return;
         }
 
@@ -580,6 +609,94 @@ class CitizenshipTracker {
             toast.classList.remove('show');
             setTimeout(() => document.body.removeChild(toast), 300);
         }, 3000);
+    }
+
+    // Premium Feature Methods
+    showUpgradeModal() {
+        const modal = document.getElementById('upgradeModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
+
+    closeUpgradeModal() {
+        const modal = document.getElementById('upgradeModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    startSubscription(priceId) {
+        if (window.paymentManager) {
+            window.paymentManager.startSubscription(priceId);
+        } else {
+            this.showToast('Payment system not available. Please try again later.', 'error');
+        }
+    }
+
+    updateUIForSubscriptionStatus(statusDetail) {
+        const { status, features } = statusDetail;
+        
+        // Update button visibility and labels
+        const upgradeBtn = document.getElementById('upgradeBtn');
+        const signInBtn = document.getElementById('signInBtn');
+        
+        if (status === 'premium') {
+            // Hide upgrade button, show premium status
+            if (upgradeBtn) upgradeBtn.style.display = 'none';
+            
+            // Update sync and share buttons to show they're available
+            const syncBtn = document.getElementById('manualSyncBtn');
+            const shareBtn = document.getElementById('shareBtn');
+            
+            if (syncBtn) {
+                syncBtn.disabled = false;
+                syncBtn.title = 'Sync your data to the cloud';
+            }
+            
+            if (shareBtn) {
+                shareBtn.disabled = false;
+                shareBtn.title = 'Share your progress with others';
+            }
+        } else {
+            // Show upgrade button for free users who are signed in
+            if (window.firebaseSync && window.firebaseSync.auth.currentUser) {
+                if (upgradeBtn) upgradeBtn.style.display = 'inline-block';
+                if (signInBtn) signInBtn.style.display = 'none';
+            }
+            
+            // Update sync and share buttons to show they require premium
+            const syncBtn = document.getElementById('manualSyncBtn');
+            const shareBtn = document.getElementById('shareBtn');
+            
+            if (syncBtn) {
+                syncBtn.title = 'Upgrade to Premium to sync your data to the cloud';
+            }
+            
+            if (shareBtn) {
+                shareBtn.title = 'Upgrade to Premium to share your progress';
+            }
+        }
+        
+        // Update subscription status indicator if it exists
+        this.updateSubscriptionStatusIndicator(status);
+    }
+
+    updateSubscriptionStatusIndicator(status) {
+        // Add subscription status indicator to user section
+        const userSection = document.getElementById('userSection');
+        if (userSection && window.firebaseSync && window.firebaseSync.auth.currentUser) {
+            let statusIndicator = userSection.querySelector('.subscription-status');
+            
+            if (!statusIndicator) {
+                statusIndicator = document.createElement('span');
+                statusIndicator.className = 'subscription-status';
+                userSection.querySelector('.user-details').appendChild(statusIndicator);
+            }
+            
+            statusIndicator.className = `subscription-status ${status}`;
+            statusIndicator.textContent = status === 'premium' ? 'Premium' : 'Free';
+        }
     }
 
     // Utility Functions
