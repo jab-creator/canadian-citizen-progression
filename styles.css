@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: radial-gradient(circle at top, #f6f8fc 0%, #edf1f7 45%, #e4ebf5 100%);
+    background: radial-gradient(circle at top, #fff5f5 0%, #f6f8fc 45%, #edf1f7 100%);
     min-height: 100vh;
     color: #1f2937;
 }
@@ -73,19 +73,19 @@ header p {
 }
 
 .stat-card.primary .stat-icon {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #d62828, #b91c1c);
 }
 
 .stat-card.secondary .stat-icon {
-    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    background: linear-gradient(135deg, #fb7185, #f43f5e);
 }
 
 .stat-card.accent .stat-icon {
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
 .stat-card.info .stat-icon {
-    background: linear-gradient(135deg, #f97316, #ea580c);
+    background: linear-gradient(135deg, #38bdf8, #0284c7);
 }
 
 .stat-card.warning .stat-icon {
@@ -136,7 +136,7 @@ header p {
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    background: linear-gradient(90deg, #d62828, #b91c1c);
     border-radius: 15px;
     transition: width 0.5s ease;
     width: 0%;
@@ -183,7 +183,7 @@ header p {
 .countdown-number {
     font-size: 3rem;
     font-weight: 700;
-    color: #2563eb;
+    color: #d62828;
     line-height: 1;
 }
 
@@ -231,7 +231,7 @@ header p {
 }
 
 .tab-button.active {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #d62828, #b91c1c);
     color: white;
 }
 
@@ -274,20 +274,20 @@ header p {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #d62828, #b91c1c);
     color: white;
-    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 10px 20px rgba(214, 40, 40, 0.25);
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.35);
+    box-shadow: 0 5px 15px rgba(214, 40, 40, 0.35);
 }
 
 .btn-secondary {
     background: #f8fafc;
     color: #1f2937;
-    border: 1px solid #cbd5f5;
+    border: 1px solid #fca5a5;
 }
 
 .btn-secondary:hover {
@@ -329,7 +329,7 @@ header p {
 
 .form-input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #d62828;
 }
 
 .form-group small {
@@ -367,12 +367,12 @@ header p {
 
 /* Cloud Sync Card */
 .action-card.cloud-sync {
-    border-color: #60a5fa;
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-color: #fca5a5;
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
 }
 
 .action-card.cloud-sync h3 {
-    color: #1d4ed8;
+    color: #b91c1c;
 }
 
 .sync-status {
@@ -389,7 +389,7 @@ header p {
 }
 
 .sync-status i {
-    color: #2563eb;
+    color: #d62828;
 }
 
 /* Share Progress Card */
@@ -467,12 +467,12 @@ header p {
 }
 
 .trip-duration {
-    background: #f8f9fa;
+    background: #fef2f2;
     padding: 8px 12px;
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 500;
-    color: #667eea;
+    color: #b91c1c;
     margin: 0 15px;
 }
 
