@@ -254,6 +254,52 @@ The current setup includes:
 - Connection keep-alive
 - Proper buffer settings
 
+## 13. Firebase Testing Workflow
+
+For testing cloud features before deploying to production:
+
+### Test Branch Deployment to Firebase
+
+```bash
+# Install Firebase CLI
+npm install -g firebase-tools
+
+# Login to Firebase
+firebase login
+
+# Deploy current branch to a preview channel
+firebase hosting:channel:deploy BRANCH_NAME --project citizenship-tracker-4a2c2
+
+# Example for feature branch
+firebase hosting:channel:deploy feature-test --project citizenship-tracker-4a2c2
+```
+
+This creates a preview URL like: `https://citizenship-tracker-4a2c2--feature-test-HASH.web.app/`
+
+### Testing Workflow for New Features
+
+1. **Create feature branch**: `git checkout -b feature/new-feature`
+2. **Develop and test locally**: `python -m http.server 8000`
+3. **Deploy to Firebase preview**: `firebase hosting:channel:deploy feature-test`
+4. **Test live authentication**: Use the preview URL for real Firebase testing
+5. **Create PR**: Review and test
+6. **Merge to main**: Auto-deploys to production
+
+### Firebase Domain Configuration
+
+Make sure these domains are authorized for authentication in Firebase Console:
+- `localhost` (for local development)
+- `citizenshiptracker.ca` (production)
+- `www.citizenshiptracker.ca` (production www)
+- `citizenship-tracker-4a2c2.web.app` (Firebase Hosting)
+- `citizenship-tracker-4a2c2--*.web.app` (Firebase preview channels)
+
+### Adding New Domains to Firebase
+1. Go to Firebase Console → Authentication → Settings → Authorized domains
+2. Click "Add domain"
+3. Enter the domain (without https://)
+4. Save changes
+
 ## Support
 
 For issues with the deployment:
@@ -261,6 +307,7 @@ For issues with the deployment:
 2. Review container logs
 3. Verify DNS and firewall settings
 4. Ensure all required files are present
+5. For Firebase authentication issues, check authorized domains
 
 Your site should now be accessible at:
 - https://citizenshiptracker.ca
