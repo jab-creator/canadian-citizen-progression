@@ -37,6 +37,34 @@ header p {
     opacity: 0.9;
 }
 
+/* Header Card */
+.header-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 1160px; /* Match container max-width minus padding */
+}
+
+.header-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.header-card h1 {
+    color: #333;
+    text-shadow: none;
+    margin-bottom: 10px;
+}
+
+.header-card p {
+    color: #666;
+    opacity: 1;
+}
+
 /* Dashboard Stats Grid */
 .stats-grid {
     display: grid;
@@ -718,19 +746,19 @@ header p {
 /* Header Layout */
 .header-content {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    flex-wrap: wrap;
     gap: 20px;
 }
 
 .header-title {
-    flex: 1;
-    min-width: 300px;
+    /* Title is now inside header-card, no flex properties needed */
 }
 
 .header-actions {
-    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
 /* Authentication Section */
@@ -985,7 +1013,6 @@ header p {
 /* Responsive Design for New Elements */
 @media (max-width: 768px) {
     .header-content {
-        flex-direction: column;
         text-align: center;
     }
     
