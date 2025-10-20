@@ -7,10 +7,9 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    /* Adjusted gradient proportions to make the middle white part thicker */
-    background: linear-gradient(90deg, #fa3737 0%, #fae7e7 50%, #fa3737 100%);
+    background: radial-gradient(circle at top, #f6f8fc 0%, #edf1f7 45%, #e4ebf5 100%);
     min-height: 100vh;
-    color: #333;
+    color: #1f2937;
 }
 
 .container {
@@ -21,20 +20,20 @@ body {
 
 /* Header */
 header {
-    text-align: center;
+    text-align: left;
     margin-bottom: 30px;
-    color: white;
+    color: #1f2937;
 }
 
 header h1 {
     font-size: 2.5rem;
     margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    text-shadow: none;
 }
 
 header p {
     font-size: 1.1rem;
-    opacity: 0.9;
+    opacity: 0.75;
 }
 
 /* Dashboard Stats Grid */
@@ -46,10 +45,10 @@ header p {
 }
 
 .stat-card {
-    background: white;
-    border-radius: 15px;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.96) 0%, rgba(244, 247, 252, 0.92) 100%);
+    border-radius: 18px;
     padding: 25px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
     display: flex;
     align-items: center;
     gap: 20px;
@@ -64,79 +63,80 @@ header p {
 .stat-icon {
     width: 60px;
     height: 60px;
-    border-radius: 50%;
+    border-radius: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
     color: white;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .stat-card.primary .stat-icon {
-    background: linear-gradient(135deg, #FF0000, #CC0000);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
 }
 
 .stat-card.secondary .stat-icon {
-    background: linear-gradient(135deg, #FF0000, #AA0000);
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
 }
 
 .stat-card.accent .stat-icon {
-    background: linear-gradient(135deg, #CC0000, #FF0000);
+    background: linear-gradient(135deg, #10b981, #059669);
 }
 
 .stat-card.info .stat-icon {
-    background: linear-gradient(135deg, #AA0000, #FF0000);
+    background: linear-gradient(135deg, #f97316, #ea580c);
 }
 
 .stat-card.warning .stat-icon {
-    background: linear-gradient(135deg, #FF6666, #FF0000);
+    background: linear-gradient(135deg, #f43f5e, #e11d48);
 }
 
 .stat-content h3 {
     font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 5px;
+    color: #64748b;
+    margin-bottom: 6px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .stat-number {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 5px;
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 6px;
 }
 
 .stat-subtitle {
     font-size: 0.8rem;
-    color: #999;
+    color: #94a3b8;
 }
 
 /* Progress Section */
 .progress-section {
-    background: white;
-    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 18px;
     padding: 30px;
     margin-bottom: 30px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
 }
 
 .progress-section h3 {
     margin-bottom: 20px;
-    color: #333;
+    color: #1f2937;
 }
 
 .progress-bar {
     position: relative;
     height: 30px;
-    background: #f0f0f0;
+    background: #e2e8f0;
     border-radius: 15px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #FF0000, #CC0000);
+    background: linear-gradient(90deg, #2563eb, #1d4ed8);
     border-radius: 15px;
     transition: width 0.5s ease;
     width: 0%;
@@ -147,24 +147,24 @@ header p {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-weight: bold;
-    color: #333;
-    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 0.95rem;
 }
 
 /* Countdown Section */
 .countdown-section {
-    background: white;
-    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 18px;
     padding: 30px;
     margin-bottom: 30px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
     text-align: center;
 }
 
 .countdown-section h3 {
     margin-bottom: 20px;
-    color: #333;
+    color: #1f2937;
 }
 
 .countdown {
@@ -182,14 +182,14 @@ header p {
 
 .countdown-number {
     font-size: 3rem;
-    font-weight: bold;
-    color: #FF0000;
+    font-weight: 700;
+    color: #2563eb;
     line-height: 1;
 }
 
 .countdown-label {
     font-size: 0.9rem;
-    color: #666;
+    color: #64748b;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-top: 5px;
@@ -198,11 +198,11 @@ header p {
 /* Navigation Tabs */
 .tabs {
     display: flex;
-    background: white;
-    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 18px;
     padding: 10px;
     margin-bottom: 30px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
     gap: 10px;
     flex-wrap: wrap;
 }
@@ -226,27 +226,27 @@ header p {
 }
 
 .tab-button:hover {
-    background: #f8f9fa;
-    color: #333;
+    background: #e2e8f0;
+    color: #1f2937;
 }
 
 .tab-button.active {
-    background: linear-gradient(135deg, #FF0000, #CC0000);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     color: white;
 }
 
 /* Content Sections */
 .content-section {
-    background: white;
-    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 18px;
     padding: 30px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
     margin-bottom: 30px;
 }
 
 .section-header {
     display: flex;
-    justify-content: between;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
     flex-wrap: wrap;
@@ -274,33 +274,35 @@ header p {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #FF0000, #CC0000);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     color: white;
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.35);
 }
 
 .btn-secondary {
-    background: #f8f9fa;
-    color: #333;
-    border: 1px solid #dee2e6;
+    background: #f8fafc;
+    color: #1f2937;
+    border: 1px solid #cbd5f5;
 }
 
 .btn-secondary:hover {
-    background: #e9ecef;
+    background: #e2e8f0;
     transform: translateY(-2px);
 }
 
 .btn-danger {
-    background: #dc3545;
+    background: linear-gradient(135deg, #f43f5e, #e11d48);
     color: white;
+    box-shadow: 0 10px 20px rgba(244, 63, 94, 0.25);
 }
 
 .btn-danger:hover {
-    background: #c82333;
+    background: linear-gradient(135deg, #e11d48, #be123c);
     transform: translateY(-2px);
 }
 
@@ -351,24 +353,26 @@ header p {
 
 .action-card {
     padding: 25px;
-    border: 2px solid #e9ecef;
-    border-radius: 10px;
+    border: 1px solid #dbe4f3;
+    border-radius: 16px;
     text-align: center;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.96) 0%, rgba(241, 245, 249, 0.92) 100%);
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.1);
 }
 
 .action-card.danger {
-    border-color: #dc3545;
-    background: #fff5f5;
+    border-color: #f87171;
+    background: linear-gradient(160deg, #fee2e2 0%, #fecaca 100%);
 }
 
 /* Cloud Sync Card */
 .action-card.cloud-sync {
-    border-color: #007bff;
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-color: #60a5fa;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
 }
 
 .action-card.cloud-sync h3 {
-    color: #0056b3;
+    color: #1d4ed8;
 }
 
 .sync-status {
@@ -378,24 +382,24 @@ header p {
     gap: 8px;
     margin: 12px 0 16px 0;
     padding: 8px 12px;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 6px;
+    background: rgba(148, 163, 184, 0.12);
+    border-radius: 12px;
     font-size: 0.9rem;
-    color: #374151;
+    color: #475569;
 }
 
 .sync-status i {
-    color: #007bff;
+    color: #2563eb;
 }
 
 /* Share Progress Card */
 .action-card.share-progress {
-    border-color: #28a745;
-    background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+    border-color: #34d399;
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
 }
 
 .action-card.share-progress h3 {
-    color: #1e7e34;
+    color: #047857;
 }
 
 .action-card h3 {
@@ -636,7 +640,22 @@ header p {
     .container {
         padding: 15px;
     }
-    
+
+    header {
+        text-align: center;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 24px;
+    }
+
+    .user-info {
+        align-items: center;
+    }
+
     header h1 {
         font-size: 2rem;
     }
@@ -719,9 +738,13 @@ header p {
 .header-content {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     flex-wrap: wrap;
     gap: 20px;
+    background: rgba(255, 255, 255, 0.96);
+    padding: 32px;
+    border-radius: 24px;
+    box-shadow: 0 18px 35px rgba(15, 23, 42, 0.12);
 }
 
 .header-title {
@@ -738,6 +761,9 @@ header p {
     display: flex;
     align-items: center;
     gap: 15px;
+    padding: 10px 14px;
+    border-radius: 16px;
+    background: rgba(148, 163, 184, 0.12);
 }
 
 .user-info {
@@ -754,7 +780,8 @@ header p {
     font-size: 0.9rem;
     padding: 4px 8px;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(148, 163, 184, 0.16);
+    color: #475569;
 }
 
 .sync-status.sync-success {
