@@ -399,22 +399,7 @@ header p {
     color: #0056b3;
 }
 
-.sync-status {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin: 12px 0 16px 0;
-    padding: 8px 12px;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 6px;
-    font-size: 0.9rem;
-    color: #374151;
-}
 
-.sync-status i {
-    color: #007bff;
-}
 
 /* Share Progress Card */
 .action-card.share-progress {
@@ -757,7 +742,7 @@ header p {
 
 .header-actions {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     width: 100%;
 }
 
@@ -783,7 +768,6 @@ header p {
     padding: 4px 8px;
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.2);
-    align-self: flex-end;
 }
 
 .sync-status.sync-success {
@@ -1022,7 +1006,7 @@ header p {
     }
     
     .user-info {
-        align-items: center;
+        align-items: flex-end;
     }
     
     .user-details {
