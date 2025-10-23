@@ -783,7 +783,6 @@ header p {
     padding: 4px 8px;
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.2);
-    align-self: center;
 }
 
 .sync-status.sync-success {
@@ -809,6 +808,12 @@ header p {
 .sync-status.sync-queued {
     color: #8b5cf6;
     background: rgba(139, 92, 246, 0.1);
+}
+
+.user-email {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 8px;
 }
 
 .user-details {
