@@ -139,11 +139,16 @@ class FirebaseAuthManager {
         }
 
         try {
+            // Construct proper ActionCodeSettings
             const actionCodeSettings = {
-                url: window.location.href,
+                // Use the current origin for the redirect URL
+                url: window.location.origin + window.location.pathname,
+                // This must be true for email link sign-in
                 handleCodeInApp: true,
             };
 
+            console.log('Sending sign-in link with settings:', actionCodeSettings);
+            
             await this.sendSignInLinkToEmail(this.auth, email, actionCodeSettings);
             
             // Save email for completing sign in
@@ -153,34 +158,93 @@ class FirebaseAuthManager {
             this.showSuccessMessage(`Magic link sent to ${email}! Check your inbox and click the link to sign in.`);
         } catch (error) {
             console.error('Email sign in error:', error);
-            this.showErrorMessage('Failed to send magic link. Please try again.');
+            console.error('Error code:', error.code);
+            console.error('Error message:', error.message);
+            
+            // Provide more specific error messages
+            let errorMessage = 'Failed to send magic link. ';
+            
+            switch (error.code) {
+                case 'auth/operation-not-allowed':
+                    errorMessage += 'Email link sign-in is not enabled. Please contact support.';
+                    break;
+                case 'auth/invalid-email':
+                    errorMessage += 'Invalid email address.';
+                    break;
+                case 'auth/unauthorized-domain':
+                    errorMessage += 'This domain is not authorized. Please contact support.';
+                    break;
+                case 'auth/too-many-requests':
+                    errorMessage += 'Too many requests. Please try again later.';
+                    break;
+                default:
+                    errorMessage += `Error: ${error.message}`;
+            }
+            
+            this.showErrorMessage(errorMessage);
         }
     }
 
     async checkEmailLinkSignIn() {
+        // Check if the current URL is a sign-in with email link
         if (this.isSignInWithEmailLink(this.auth, window.location.href)) {
+            console.log('Detected email link sign-in attempt');
+            
+            // Get the email if available from localStorage
             let email = localStorage.getItem('emailForSignIn');
             
             if (!email) {
+                // User opened the link on a different device
+                // Ask for email to prevent session fixation attacks
                 email = window.prompt('Please provide your email for confirmation');
             }
 
+            if (!email) {
+                this.showErrorMessage('Email is required to complete sign-in.');
+                return;
+            }
+
             try {
+                console.log('Completing email link sign-in for:', email);
+                
                 const result = await this.signInWithEmailLink(this.auth, email, window.location.href);
+                
+                // Clear email from storage
                 localStorage.removeItem('emailForSignIn');
                 
-                this.showSuccessMessage('Successfully signed in!');
+                console.log('Email link sign-in successful:', result.user);
+                
+                this.showSuccessMessage('Successfully signed in with magic link!');
                 
                 // Trigger data migration
                 if (window.firebaseSync) {
                     await window.firebaseSync.migrateLocalDataToCloud();
                 }
                 
-                // Clean up URL
+                // Clean up URL to remove the email link parameters
                 window.history.replaceState({}, document.title, window.location.pathname);
             } catch (error) {
                 console.error('Email link sign in error:', error);
-                this.showErrorMessage('Failed to complete sign in. Please try again.');
+                console.error('Error code:', error.code);
+                console.error('Error message:', error.message);
+                
+                let errorMessage = 'Failed to complete sign in. ';
+                
+                switch (error.code) {
+                    case 'auth/invalid-email':
+                        errorMessage += 'Invalid email address.';
+                        break;
+                    case 'auth/invalid-action-code':
+                        errorMessage += 'The sign-in link is invalid or has expired.';
+                        break;
+                    case 'auth/expired-action-code':
+                        errorMessage += 'The sign-in link has expired. Please request a new one.';
+                        break;
+                    default:
+                        errorMessage += `Error: ${error.message}`;
+                }
+                
+                this.showErrorMessage(errorMessage);
             }
         }
     }
