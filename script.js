@@ -288,7 +288,7 @@ class CitizenshipTracker {
             }
         });
 
-        const daysInCanada = Math.max(0, totalDaysInPeriod - daysOutside);
+        const daysInCanada = Math.max(0, totalDaysInPeriod - daysOutside  - 1);
         
         return {
             daysInCanada,
