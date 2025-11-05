@@ -167,8 +167,8 @@ class CitizenshipTracker {
         };
 
         // Validation
-        if (new Date(trip.departureDate) >= new Date(trip.returnDate)) {
-            alert('Return date must be after departure date');
+        if (new Date(trip.departureDate) > new Date(trip.returnDate)) {
+            alert('Return date cannot be before departure date');
             return;
         }
 
@@ -243,7 +243,10 @@ class CitizenshipTracker {
         const departure = new Date(departureDate);
         const returnD = new Date(returnDate);
         const diffTime = Math.abs(returnD - departure);
-        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        // Subtract 1 because both departure and return days are partial days in Canada
+        // Person is in Canada on departure day (leaves during the day) and return day (returns during the day)
+        return Math.max(0, totalDays - 1);
     }
 
     calculateDaysInCanada() {
@@ -277,7 +280,10 @@ class CitizenshipTracker {
                 const overlapEnd = tripEnd < eligibilityPeriodEnd ? tripEnd : eligibilityPeriodEnd;
                 
                 if (overlapStart < overlapEnd) {
-                    daysOutside += Math.ceil((overlapEnd - overlapStart) / (1000 * 60 * 60 * 24));
+                    const totalDays = Math.ceil((overlapEnd - overlapStart) / (1000 * 60 * 60 * 24));
+                    // Subtract 1 because both departure and return days are partial days in Canada
+                    // Person is in Canada on departure day (leaves during the day) and return day (returns during the day)
+                    daysOutside += Math.max(0, totalDays - 1);
                 }
             }
         });
