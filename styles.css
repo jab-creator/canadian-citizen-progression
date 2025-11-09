@@ -370,6 +370,116 @@ header p {
     max-width: 500px;
 }
 
+.residency-periods-group {
+    margin-top: 30px;
+}
+
+.residency-periods-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.helper-text {
+    color: #555;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.residency-periods-card {
+    border: 2px dashed #e9ecef;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 20px;
+    background: #ffffff;
+}
+
+.timeline-header {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) 80px;
+    gap: 12px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #999;
+    margin-bottom: 12px;
+}
+
+.timeline-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.residency-period-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) 80px;
+    gap: 12px;
+    align-items: center;
+}
+
+.residency-period-row .btn {
+    width: 100%;
+}
+
+.small-empty {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.small-empty i {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1.4rem;
+    color: #d6336c;
+}
+
+.info-callout {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 16px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #fff5f0 0%, #ffe9e6 100%);
+    border: 1px solid rgba(255, 87, 34, 0.2);
+    color: #8a2a2a;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+.info-callout i {
+    font-size: 1.2rem;
+    margin-top: 3px;
+}
+
+.info-callout p {
+    margin: 0;
+}
+
+@media (max-width: 600px) {
+    .timeline-header {
+        display: none;
+    }
+
+    .residency-period-row {
+        grid-template-columns: 1fr;
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .residency-period-row .btn {
+        width: 100%;
+    }
+}
+
 /* Data Actions */
 .data-actions {
     display: grid;
