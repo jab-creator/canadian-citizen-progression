@@ -5,7 +5,8 @@ class CitizenshipTracker {
         this.settings = {
             prDate: null,
             targetDate: null,
-            residencyStatus: 'permanent'
+            residencyStatus: 'permanent',
+            residencyPeriods: []
         };
         this.currentEditingTrip = null;
         
@@ -30,7 +31,12 @@ class CitizenshipTracker {
         
         if (savedSettings) {
             this.settings = { ...this.settings, ...JSON.parse(savedSettings) };
+            if (!Array.isArray(this.settings.residencyPeriods)) {
+                this.settings.residencyPeriods = [];
+            }
             this.populateSettings();
+        } else {
+            this.renderResidencyPeriods();
         }
     }
 
@@ -53,13 +59,15 @@ class CitizenshipTracker {
             document.getElementById('targetDate').value = this.settings.targetDate;
         }
         document.getElementById('residencyStatus').value = this.settings.residencyStatus;
+
+        this.renderResidencyPeriods();
     }
 
     // Event Binding
     bindEvents() {
         // Tab navigation
         document.querySelectorAll('.tab-button').forEach(button => {
-            button.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+            button.addEventListener('click', () => this.switchTab(button.dataset.tab));
         });
 
         // Trip management
@@ -77,7 +85,7 @@ class CitizenshipTracker {
         document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
         document.getElementById('importFile').addEventListener('change', (e) => this.importData(e));
         document.getElementById('clearDataBtn').addEventListener('click', () => this.clearAllData());
-        
+
         // Cloud sync event listeners
         document.getElementById('manualSyncBtn').addEventListener('click', () => this.manualSync());
         document.getElementById('shareProgressBtn').addEventListener('click', () => this.generateShareLink());
@@ -87,6 +95,10 @@ class CitizenshipTracker {
             const otherGroup = document.getElementById('otherReasonGroup');
             otherGroup.style.display = e.target.value === 'other' ? 'block' : 'none';
         });
+
+        // Residency periods
+        document.getElementById('addResidencyPeriodBtn').addEventListener('click', () => this.addResidencyPeriod());
+        document.getElementById('residencyPeriodsContainer').addEventListener('click', (e) => this.handleResidencyPeriodContainerClick(e));
     }
 
     // Tab Management
@@ -196,7 +208,7 @@ class CitizenshipTracker {
 
     renderTrips() {
         const tripsList = document.getElementById('tripsList');
-        
+
         if (this.trips.length === 0) {
             tripsList.innerHTML = `
                 <div class="empty-state">
@@ -209,11 +221,12 @@ class CitizenshipTracker {
         }
 
         const sortedTrips = [...this.trips].sort((a, b) => new Date(b.departureDate) - new Date(a.departureDate));
-        
+
         tripsList.innerHTML = sortedTrips.map(trip => {
             const duration = this.calculateTripDuration(trip.departureDate, trip.returnDate);
             const reasonText = trip.reason === 'other' ? trip.otherReason : trip.reason;
-            
+            const safeTripPayload = JSON.stringify(trip).replace(/"/g, '&quot;');
+
             return `
                 <div class="trip-item">
                     <div class="trip-info">
@@ -226,7 +239,7 @@ class CitizenshipTracker {
                     </div>
                     <div class="trip-duration">${duration} days</div>
                     <div class="trip-actions">
-                        <button class="btn btn-secondary btn-small" onclick="app.openTripModal(${JSON.stringify(trip).replace(/"/g, '&quot;')})">
+                        <button class="btn btn-secondary btn-small" onclick="app.openTripModal(${safeTripPayload})">
                             <i class="fas fa-edit"></i>
                         </button>
                         <button class="btn btn-danger btn-small" onclick="app.deleteTrip(${trip.id})">
@@ -236,6 +249,82 @@ class CitizenshipTracker {
                 </div>
             `;
         }).join('');
+    }
+
+    // Residency Period Management
+    createResidencyPeriodRow(period = {}) {
+        const start = period.startDate || '';
+        const end = period.endDate || '';
+        const status = (period.status || 'pr').toLowerCase();
+
+        return `
+            <div class="residency-period-row">
+                <input type="date" class="form-input period-start" value="${start}">
+                <input type="date" class="form-input period-end" value="${end}">
+                <select class="form-input period-status">
+                    <option value="pr" ${status === 'pr' || status === 'permanent' ? 'selected' : ''}>PR</option>
+                    <option value="temporary" ${status === 'temporary' ? 'selected' : ''}>Temporary</option>
+                    <option value="absence" ${status === 'absence' ? 'selected' : ''}>Absence</option>
+                </select>
+                <button type="button" class="btn btn-danger btn-small remove-period">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+    }
+
+    createResidencyEmptyState() {
+        return `
+            <div class="empty-state small-empty">
+                <i class="fas fa-calendar-plus"></i>
+                <p>Use “Add Period” to record your residency history.</p>
+            </div>
+        `;
+    }
+
+    renderResidencyPeriods() {
+        const container = document.getElementById('residencyPeriodsContainer');
+        if (!container) return;
+
+        const periods = Array.isArray(this.settings.residencyPeriods) ? this.settings.residencyPeriods : [];
+
+        if (!periods.length) {
+            container.innerHTML = this.createResidencyEmptyState();
+            return;
+        }
+
+        container.innerHTML = '';
+
+        [...periods]
+            .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
+            .forEach(period => {
+                container.insertAdjacentHTML('beforeend', this.createResidencyPeriodRow(period));
+            });
+    }
+
+    addResidencyPeriod(period = { startDate: '', endDate: '', status: 'pr' }) {
+        const container = document.getElementById('residencyPeriodsContainer');
+        if (!container) return;
+
+        if (container.querySelector('.residency-period-row')) {
+            container.insertAdjacentHTML('beforeend', this.createResidencyPeriodRow(period));
+        } else {
+            container.innerHTML = this.createResidencyPeriodRow(period);
+        }
+    }
+
+    handleResidencyPeriodContainerClick(event) {
+        const removeButton = event.target.closest('.remove-period');
+        if (removeButton) {
+            const row = removeButton.closest('.residency-period-row');
+            const container = document.getElementById('residencyPeriodsContainer');
+            if (row) {
+                row.remove();
+            }
+            if (container && !container.querySelector('.residency-period-row')) {
+                container.innerHTML = this.createResidencyEmptyState();
+            }
+        }
     }
 
     // Calculations
@@ -250,46 +339,114 @@ class CitizenshipTracker {
     }
 
     calculateDaysInCanada() {
-        if (!this.settings.prDate) {
+        const targetDateValue = this.settings.targetDate;
+        const applicationDate = targetDateValue ? new Date(targetDateValue) : new Date();
+
+        if (isNaN(applicationDate.getTime())) {
             return { daysInCanada: 0, eligibilityPeriodStart: null, eligibilityPeriodEnd: null };
         }
 
-        const today = new Date();
-        const prDate = new Date(this.settings.prDate);
-        
-        // Calculate 5-year eligibility period (from today backwards)
-        const eligibilityPeriodEnd = today;
-        const eligibilityPeriodStart = new Date(today);
-        eligibilityPeriodStart.setFullYear(today.getFullYear() - 5);
+        applicationDate.setHours(0, 0, 0, 0);
+        const eligibilityPeriodEnd = new Date(applicationDate);
+        const eligibilityPeriodStart = new Date(applicationDate);
+        eligibilityPeriodStart.setFullYear(eligibilityPeriodStart.getFullYear() - 5);
 
-        // Use PR date if it's later than 5 years ago
+        const msInDay = 1000 * 60 * 60 * 24;
+        const residencyPeriods = Array.isArray(this.settings.residencyPeriods) ? this.settings.residencyPeriods : [];
+
+        if (residencyPeriods.length > 0) {
+            let prDays = 0;
+            let temporaryDays = 0;
+            let absenceDays = 0;
+
+            residencyPeriods.forEach(period => {
+                const startDate = new Date(period.startDate);
+                const endDate = new Date(period.endDate);
+                startDate.setHours(0, 0, 0, 0);
+                endDate.setHours(0, 0, 0, 0);
+
+                const overlapStart = startDate > eligibilityPeriodStart ? startDate : new Date(eligibilityPeriodStart);
+                const overlapEnd = endDate < eligibilityPeriodEnd ? endDate : new Date(eligibilityPeriodEnd);
+
+                if (overlapStart > overlapEnd) {
+                    return;
+                }
+
+                const dayCount = Math.floor((overlapEnd - overlapStart) / msInDay) + 1;
+                const status = (period.status || 'pr').toLowerCase();
+
+                if (status === 'temporary') {
+                    temporaryDays += dayCount;
+                } else if (status === 'absence') {
+                    absenceDays += dayCount;
+                } else {
+                    prDays += dayCount;
+                }
+            });
+
+            const totalDaysInPeriod = Math.max(0, Math.floor((eligibilityPeriodEnd - eligibilityPeriodStart) / msInDay) + 1);
+            const recordedDays = prDays + temporaryDays + absenceDays;
+            const uncoveredDays = Math.max(0, totalDaysInPeriod - recordedDays);
+            const temporaryCredit = Math.min(365, temporaryDays * 0.5);
+            const daysInCanada = Math.max(0, prDays + temporaryCredit);
+            const daysOutside = absenceDays + uncoveredDays;
+
+            return {
+                daysInCanada,
+                eligibilityPeriodStart,
+                eligibilityPeriodEnd,
+                totalDaysInPeriod,
+                daysOutside
+            };
+        }
+
+        if (!this.settings.prDate) {
+            const totalDaysInPeriod = Math.max(0, Math.floor((eligibilityPeriodEnd - eligibilityPeriodStart) / msInDay) + 1);
+            return {
+                daysInCanada: 0,
+                eligibilityPeriodStart,
+                eligibilityPeriodEnd,
+                totalDaysInPeriod,
+                daysOutside: 0
+            };
+        }
+
+        const prDate = new Date(this.settings.prDate);
+        prDate.setHours(0, 0, 0, 0);
+
         const actualStart = prDate > eligibilityPeriodStart ? prDate : eligibilityPeriodStart;
-        
-        // Calculate total days in the eligibility period
-        const totalDaysInPeriod = Math.ceil((eligibilityPeriodEnd - actualStart) / (1000 * 60 * 60 * 24));
-        
-        // Calculate days outside Canada during eligibility period
+        if (eligibilityPeriodEnd < actualStart) {
+            return {
+                daysInCanada: 0,
+                eligibilityPeriodStart: actualStart,
+                eligibilityPeriodEnd,
+                totalDaysInPeriod: 0,
+                daysOutside: 0
+            };
+        }
+
+        const totalDaysInPeriod = Math.ceil((eligibilityPeriodEnd - actualStart) / msInDay);
+
         let daysOutside = 0;
         this.trips.forEach(trip => {
             const tripStart = new Date(trip.departureDate);
             const tripEnd = new Date(trip.returnDate);
-            
-            // Only count trips that overlap with eligibility period
+            tripStart.setHours(0, 0, 0, 0);
+            tripEnd.setHours(0, 0, 0, 0);
+
             if (tripEnd >= actualStart && tripStart <= eligibilityPeriodEnd) {
                 const overlapStart = tripStart > actualStart ? tripStart : actualStart;
                 const overlapEnd = tripEnd < eligibilityPeriodEnd ? tripEnd : eligibilityPeriodEnd;
-                
+
                 if (overlapStart < overlapEnd) {
-                    const totalDays = Math.ceil((overlapEnd - overlapStart) / (1000 * 60 * 60 * 24));
-                    // Subtract 1 because both departure and return days are partial days in Canada
-                    // Person is in Canada on departure day (leaves during the day) and return day (returns during the day)
+                    const totalDays = Math.ceil((overlapEnd - overlapStart) / msInDay);
                     daysOutside += Math.max(0, totalDays - 1);
                 }
             }
         });
 
-        const daysInCanada = Math.max(0, totalDaysInPeriod - daysOutside  - 1);
-        
+        const daysInCanada = Math.max(0, totalDaysInPeriod - daysOutside - 1);
+
         return {
             daysInCanada,
             eligibilityPeriodStart: actualStart,
@@ -301,8 +458,9 @@ class CitizenshipTracker {
 
     calculateEstimatedEligibilityDate() {
         const calculation = this.calculateDaysInCanada();
-        const daysNeeded = 1095 - calculation.daysInCanada;
-        
+        const daysNeededRaw = 1095 - calculation.daysInCanada;
+        const daysNeeded = Math.ceil(daysNeededRaw);
+
         if (daysNeeded <= 0) {
             return null; // Already eligible - return null instead of current date
         }
@@ -328,7 +486,8 @@ class CitizenshipTracker {
         const daysInCanada = calculation.daysInCanada;
         const daysRemaining = Math.max(0, 1095 - daysInCanada);
         const progressPercentage = Math.min(100, (daysInCanada / 1095) * 100);
-        const totalTripDays = this.calculateTotalTripDays();
+        const usingResidencyPeriods = Array.isArray(this.settings.residencyPeriods) && this.settings.residencyPeriods.length > 0;
+        const totalTripDays = usingResidencyPeriods ? calculation.daysOutside : this.calculateTotalTripDays();
 
         return {
             daysInCanada,
@@ -336,7 +495,7 @@ class CitizenshipTracker {
             progressPercentage,
             totalTrips: this.trips.length,
             totalTripDays,
-            isPRDateSet: !!this.settings.prDate
+            isPRDateSet: !!this.settings.prDate || usingResidencyPeriods
         };
     }
 
@@ -403,13 +562,88 @@ class CitizenshipTracker {
 
     // Settings Management
     saveSettings() {
-        this.settings.prDate = document.getElementById('prDate').value;
-        this.settings.targetDate = document.getElementById('targetDate').value;
-        this.settings.residencyStatus = document.getElementById('residencyStatus').value;
-        
+        const prDateValue = document.getElementById('prDate').value;
+        const targetDateValue = document.getElementById('targetDate').value;
+        const residencyStatusValue = document.getElementById('residencyStatus').value;
+        const container = document.getElementById('residencyPeriodsContainer');
+        const rows = container ? [...container.querySelectorAll('.residency-period-row')] : [];
+
+        const applicationDate = targetDateValue ? new Date(targetDateValue) : new Date();
+        if (isNaN(applicationDate.getTime())) {
+            alert('Please provide a valid application date.');
+            return;
+        }
+
+        applicationDate.setHours(0, 0, 0, 0);
+        const windowEnd = new Date(applicationDate);
+        windowEnd.setHours(23, 59, 59, 999);
+        const windowStart = new Date(applicationDate);
+        windowStart.setFullYear(windowStart.getFullYear() - 5);
+        windowStart.setHours(0, 0, 0, 0);
+
+        const residencyPeriods = [];
+
+        for (const row of rows) {
+            const startValue = row.querySelector('.period-start').value;
+            const endValue = row.querySelector('.period-end').value;
+            const statusValue = row.querySelector('.period-status').value || 'pr';
+
+            if (!startValue || !endValue) {
+                alert('Please complete the start and end date for each residency period.');
+                return;
+            }
+
+            const startDate = new Date(startValue);
+            const endDate = new Date(endValue);
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(0, 0, 0, 0);
+
+            if (startDate > endDate) {
+                alert('Residency period end dates must be on or after the start date.');
+                return;
+            }
+
+            if (startDate < windowStart) {
+                alert('Residency periods must fall within the five years before your application date.');
+                return;
+            }
+
+            if (endDate > windowEnd) {
+                alert('Residency periods cannot extend beyond your application date.');
+                return;
+            }
+
+            residencyPeriods.push({
+                startDate: startValue,
+                endDate: endValue,
+                status: statusValue
+            });
+        }
+
+        const sortedPeriods = residencyPeriods
+            .map(period => ({
+                ...period,
+                startTime: new Date(period.startDate).getTime(),
+                endTime: new Date(period.endDate).getTime()
+            }))
+            .sort((a, b) => a.startTime - b.startTime);
+
+        for (let i = 1; i < sortedPeriods.length; i++) {
+            if (sortedPeriods[i].startTime <= sortedPeriods[i - 1].endTime) {
+                alert('Residency periods cannot overlap. Please adjust the dates so they do not overlap.');
+                return;
+            }
+        }
+
+        this.settings.prDate = prDateValue;
+        this.settings.targetDate = targetDateValue;
+        this.settings.residencyStatus = residencyStatusValue;
+        this.settings.residencyPeriods = sortedPeriods.map(({ startDate, endDate, status }) => ({ startDate, endDate, status }));
+
         this.saveData();
         this.updateDashboard();
-        
+        this.renderResidencyPeriods();
+
         alert('Settings saved successfully!');
     }
 
@@ -442,16 +676,20 @@ class CitizenshipTracker {
                 const data = JSON.parse(e.target.result);
                 
                 if (data.trips && data.settings) {
-                    if (confirm('This will replace all your current data. Are you sure?')) {
-                        this.trips = data.trips;
-                        this.settings = { ...this.settings, ...data.settings };
-                        this.saveData();
-                        this.populateSettings();
-                        this.updateDashboard();
-                        this.renderTrips();
-                        alert('Data imported successfully!');
-                    }
-                } else {
+                        if (confirm('This will replace all your current data. Are you sure?')) {
+                            this.trips = data.trips;
+                            this.settings = { ...this.settings, ...data.settings };
+                            if (!Array.isArray(this.settings.residencyPeriods)) {
+                                this.settings.residencyPeriods = [];
+                            }
+                            this.saveData();
+                            this.populateSettings();
+                            this.updateDashboard();
+                            this.renderTrips();
+                            this.renderResidencyPeriods();
+                            alert('Data imported successfully!');
+                        }
+                    } else {
                     alert('Invalid file format');
                 }
             } catch (error) {
@@ -471,17 +709,19 @@ class CitizenshipTracker {
                 this.settings = {
                     prDate: null,
                     targetDate: null,
-                    residencyStatus: 'permanent'
+                    residencyStatus: 'permanent',
+                    residencyPeriods: []
                 };
-                
+
                 localStorage.removeItem('citizenship-trips');
                 localStorage.removeItem('citizenship-settings');
-                
+
                 document.getElementById('tripForm').reset();
                 this.populateSettings();
                 this.updateDashboard();
                 this.renderTrips();
-                
+                this.renderResidencyPeriods();
+
                 alert('All data has been cleared.');
             }
         }
