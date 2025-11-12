@@ -218,10 +218,23 @@
                 </div>
 
                 <div class="settings-form">
+                    <div class="info-callout" style="margin-bottom: 20px; background: #e3f2fd; border-left-color: #2196f3;">
+                        <i class="fas fa-lightbulb" aria-hidden="true"></i>
+                        <div>
+                            <p style="margin-bottom: 8px;"><strong>Choose Your Tracking Mode:</strong></p>
+                            <p style="margin-bottom: 8px;">
+                                <strong>Simple Mode:</strong> If you became a PR and only need to track trips, use the "Permanent Resident Date" field below.
+                            </p>
+                            <p style="margin: 0;">
+                                <strong>Advanced Mode:</strong> If you had temporary status (work/study permit) before becoming a PR, or have extended absences, use the "Residency Timeline" section instead and leave the PR Date field empty.
+                            </p>
+                        </div>
+                    </div>
+
                     <div class="form-group">
-                        <label for="prDate">Permanent Resident Date</label>
+                        <label for="prDate">Permanent Resident Date <span style="color: #666; font-weight: normal;">(Simple Mode)</span></label>
                         <input type="date" id="prDate" class="form-input">
-                        <small>The date you became a permanent resident of Canada</small>
+                        <small>The date you became a permanent resident of Canada. Leave empty if using Residency Timeline below.</small>
                     </div>
 
                     <div class="form-group">
@@ -241,7 +254,7 @@
 
                     <div class="form-group residency-periods-group">
                         <div class="residency-periods-header">
-                            <label>Residency Timeline (Last 5 Years)</label>
+                            <label>Residency Timeline (Last 5 Years) <span style="color: #666; font-weight: normal;">(Advanced Mode)</span></label>
                             <button type="button" class="btn btn-secondary btn-small" id="addResidencyPeriodBtn">
                                 <i class="fas fa-plus"></i> Add Period
                             </button>
@@ -249,7 +262,7 @@
                         <small class="helper-text">
                             Track each stretch of time in or out of Canada so we can calculate credits accurately. Choose
                             <strong>PR</strong> for permanent residence, <strong>Temporary</strong> for work/study/visitor status,
-                            or <strong>Absence</strong> when you were outside Canada.
+                            or <strong>Absence</strong> when you were outside Canada. <strong>Leave "Permanent Resident Date" field empty when using this mode.</strong>
                         </small>
                         <small class="helper-text">
                             Temporary days count for half a day of credit (maximum 365 credited days). PR days count as full
