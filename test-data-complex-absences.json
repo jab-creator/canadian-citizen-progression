@@ -1,0 +1,25 @@
+{
+  "trips": [],
+  "settings": {
+    "prDate": "",
+    "targetDate": "2024-11-12",
+    "residencyStatus": "permanent",
+    "residencyPeriods": [
+      {
+        "startDate": "2019-11-12",
+        "endDate": "2022-06-30",
+        "status": "pr"
+      },
+      {
+        "startDate": "2022-07-01",
+        "endDate": "2023-12-31",
+        "status": "absence"
+      },
+      {
+        "startDate": "2024-01-01",
+        "endDate": "2024-11-12",
+        "status": "pr"
+      }
+    ]
+  }
+}
