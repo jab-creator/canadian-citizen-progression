@@ -337,6 +337,55 @@ header p {
     margin-bottom: 20px;
 }
 
+/* Desktop form layout improvements */
+@media (min-width: 768px) {
+    .settings-form {
+        padding: 0 20px;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        align-items: start;
+    }
+    
+    .form-row .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+    
+    /* Better spacing for desktop */
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-input {
+        padding: 14px 18px;
+        font-size: 1rem;
+    }
+    
+    /* Improve residency periods card on desktop */
+    .residency-periods-card {
+        padding: 25px;
+        margin-bottom: 25px;
+    }
+    
+    /* Better button spacing */
+    .btn {
+        padding: 14px 28px;
+        font-size: 1rem;
+    }
+    
+    .btn-small {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
+
 .form-group label {
     display: block;
     margin-bottom: 8px;
@@ -367,7 +416,9 @@ header p {
 
 /* Settings Form */
 .settings-form {
-    max-width: 500px;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
 }
 
 .residency-periods-group {
@@ -407,6 +458,14 @@ header p {
     margin-bottom: 12px;
 }
 
+@media (min-width: 768px) {
+    .timeline-header {
+        grid-template-columns: 1fr 1fr 1fr 120px;
+        gap: 20px;
+        font-size: 0.8rem;
+    }
+}
+
 .timeline-body {
     display: flex;
     flex-direction: column;
@@ -418,6 +477,13 @@ header p {
     grid-template-columns: repeat(3, minmax(0, 1fr)) 80px;
     gap: 12px;
     align-items: center;
+}
+
+@media (min-width: 768px) {
+    .residency-period-row {
+        grid-template-columns: 1fr 1fr 1fr 120px;
+        gap: 20px;
+    }
 }
 
 .residency-period-row .btn {
@@ -461,6 +527,21 @@ header p {
 
 .info-callout p {
     margin: 0;
+}
+
+@media (max-width: 768px) {
+    .settings-form {
+        padding: 0 10px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .form-group.full-width {
+        grid-column: 1;
+    }
 }
 
 @media (max-width: 600px) {
