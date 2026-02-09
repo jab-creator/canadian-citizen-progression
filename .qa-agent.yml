@@ -1,0 +1,19 @@
+project:
+  name: "citizenship-tracker"
+  type: "static_web"
+
+run:
+  command: "python3 -m http.server 8000"
+  wait_for: "http://localhost:8000/"
+  timeout: 15
+
+test:
+  target_folder: "citizenship_tracker"
+  strategy: "selenium"
+  base_url_env: "APP_BASE_URL"
+
+selectors:
+  strategy: "text"
+
+env:
+  APP_BASE_URL: "http://localhost:8000/"
