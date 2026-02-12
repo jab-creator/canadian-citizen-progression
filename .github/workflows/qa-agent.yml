@@ -25,7 +25,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           # Pin to testing-agent Phase 1 hardening commit.
-          pip install "git+https://github.com/jab-creator/testing-agent@59c5e89"
+          pip install "git+https://github.com/jab-creator/testing-agent@575c91d"
           python -m pip show testing-agent
 
       - name: Install browser driver
