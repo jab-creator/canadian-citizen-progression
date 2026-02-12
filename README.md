@@ -4,6 +4,7 @@ A beautiful, interactive web application to track your progress towards Canadian
 
 ## ✨ Features
 
+
 ### 📊 Dashboard
 - **Real-time Statistics**: Track days in Canada, days remaining, progress percentage, and total trips
 - **Progress Visualization**: Beautiful progress bar showing your journey to 1,095 days
