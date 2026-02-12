@@ -4,6 +4,7 @@ A beautiful, interactive web application to track your progress towards Canadian
 
 ## ✨ Features
 
+
 ### 📊 Dashboard
 - **Real-time Statistics**: Track days in Canada, days remaining, progress percentage, and total trips
 - **Progress Visualization**: Beautiful progress bar showing your journey to 1,095 days
@@ -21,6 +22,11 @@ A beautiful, interactive web application to track your progress towards Canadian
 - **Permanent Resident Date**: Set your PR date for accurate calculations
 - **Target Application Date**: Optional field for planning purposes
 - **Residency Status**: Track your current status (Permanent Resident, Temporary Resident, Protected Person)
+- **Residency Timeline (NEW!)**: Track multiple periods with different statuses over the last 5 years
+  - **PR Periods**: Full day credits toward citizenship
+  - **Temporary Periods**: Half day credits (work permit, study permit, visitor status) - maximum 365 credited days
+  - **Absence Periods**: No credits for time outside Canada
+  - **Smart Validation**: Prevents overlapping periods and validates dates within the 5-year window
 
 ### 💾 Data Management
 - **Export Data**: Download your complete trip history and settings as JSON
@@ -48,6 +54,11 @@ The application implements the official Canadian citizenship requirements:
 - **1,095 Days Required**: Must be physically present in Canada for at least 1,095 days (3 years)
 - **5-Year Eligibility Period**: Calculated from your application date backwards
 - **730 Days as PR**: Must include at least 730 days as a permanent resident
+- **Temporary Resident Credit**: Days spent in Canada as a temporary resident before becoming a PR count as half days (maximum 365 credited days)
+- **Multiple Residency Periods**: Track different periods with different statuses (PR, Temporary, Absence)
+- **Flexible Calculation Mode**: 
+  - **Legacy Mode**: Uses PR date + trips for simple tracking
+  - **Residency Periods Mode**: Uses detailed period-by-period tracking for complex immigration histories
 - **Trip Overlap Handling**: Accurately calculates days outside Canada during the eligibility period
 - **Smart Date Calculations**: Handles edge cases and overlapping periods correctly
 
@@ -97,11 +108,30 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ## 📱 How to Use
 
-### 1. Initial Setup
+### 1. Initial Setup (Simple Mode)
 1. Go to the **Settings** tab
 2. Enter your **Permanent Resident Date**
 3. Optionally set a **Target Application Date**
 4. Save your settings
+
+### 1. Initial Setup (Advanced Mode - Residency Periods)
+For complex immigration histories with multiple statuses:
+1. Go to the **Settings** tab
+2. Set your **Target Application Date** (required for period tracking)
+3. Click **"Add Period"** in the Residency Timeline section
+4. For each period in the last 5 years, add:
+   - **Start Date**: When this period began
+   - **End Date**: When this period ended
+   - **Status**: Choose PR, Temporary, or Absence
+     - **PR**: Full day credits (e.g., after becoming a permanent resident)
+     - **Temporary**: Half day credits (e.g., work permit, study permit, visitor) - max 365 credited days
+     - **Absence**: No credits (e.g., extended time outside Canada)
+5. Save your settings
+
+**Example Immigration Timeline:**
+- 2019-01-15 to 2021-03-20: Temporary (study permit) - 795 days → 365 credited days (max)
+- 2021-03-21 to 2024-11-12: PR (permanent resident) - 1332 days → 1332 credited days
+- Total credited: 1697 days ✅ (exceeds 1095 requirement)
 
 ### 2. Adding Trips
 1. Click the **Trips** tab
@@ -112,6 +142,8 @@ docker-compose -f docker-compose.prod.yml up -d
    - Destination
    - Reason for travel
 4. Save the trip
+
+**Note**: Trips are used in Legacy Mode (when not using Residency Periods). If you're using Residency Periods, track absences as "Absence" periods instead.
 
 ### 3. Monitor Progress
 - The **Dashboard** automatically updates with your current status
