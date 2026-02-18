@@ -2,15 +2,60 @@ name: QA Agent
 
 on:
   pull_request:
-  workflow_dispatch:
+  push:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   qa:
-    uses: jab-creator/testing-agent/.github/workflows/run-agent.yml@main
-    with:
-      target_repo: ${{ github.repository }}
-      target_ref: ${{ github.event.pull_request.head.sha || github.sha }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [smoke, regression]
+
+    steps:
+      - name: Checkout (metadata only)
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install testing-agent CLI
+        run: |
+          python -m pip install --upgrade pip
+          # Commit includes suite selection + regression + eligibility fixtures.
+          pip install "git+https://github.com/jab-creator/testing-agent@9f79a34"
+          python -m pip show testing-agent
+
+      - name: Install browser driver
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y chromium-chromedriver || sudo apt-get install -y chromium-driver
+          command -v chromedriver || true
+
+      - name: Run qa suite
+        env:
+          PR_REPO: ${{ github.event.pull_request.head.repo.clone_url }}
+          PR_SHA: ${{ github.event.pull_request.head.sha }}
+          PUSH_REPO: ${{ github.server_url }}/${{ github.repository }}
+          PUSH_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          REPO="${PR_REPO:-$PUSH_REPO}"
+          SHA="${PR_SHA:-$PUSH_SHA}"
+
+          if [ -z "$REPO" ] || [ -z "$SHA" ]; then
+            echo "Missing repo/sha context"
+            exit 2
+          fi
+
+          echo "Repo: $REPO"
+          echo "SHA:  $SHA"
+          echo "Suite: ${{ matrix.suite }}"
+          qa --repo "$REPO" --ref "$SHA" --suite "${{ matrix.suite }}"
