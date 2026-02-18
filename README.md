@@ -1,6 +1,6 @@
 # Canadian Citizenship Tracker 🇨🇦
 
-A beautiful, interactive web application to track your progress towards Canadian citizenship eligibility. Monitor your days in Canada, manage your travel history, and see a real-time countdown to your eligibility date!
+A beautiful, interactive web application to track your progress towards Canadian citizenship eligibility. Monitor your days in Canada, manage your travel history, and see a real-time countdown to your eligibility date! 
 
 ## ✨ Features
 
