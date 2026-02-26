@@ -52,13 +52,9 @@ class CitizenshipTracker {
     }
 
     populateSettings() {
-        if (this.settings.prDate) {
-            document.getElementById('prDate').value = this.settings.prDate;
-        }
         if (this.settings.targetDate) {
             document.getElementById('targetDate').value = this.settings.targetDate;
         }
-        document.getElementById('residencyStatus').value = this.settings.residencyStatus;
 
         this.renderResidencyPeriods();
     }
@@ -99,6 +95,7 @@ class CitizenshipTracker {
         // Residency periods
         document.getElementById('addResidencyPeriodBtn').addEventListener('click', () => this.addResidencyPeriod());
         document.getElementById('residencyPeriodsContainer').addEventListener('click', (e) => this.handleResidencyPeriodContainerClick(e));
+        document.getElementById('residencyPeriodsContainer').addEventListener('change', (e) => this.handleResidencyPeriodChange(e));
     }
 
     // Tab Management
@@ -256,16 +253,21 @@ class CitizenshipTracker {
         const start = period.startDate || '';
         const end = period.endDate || '';
         const status = (period.status || 'pr').toLowerCase();
+        const isCurrent = period.isCurrent || false;
 
         return `
             <div class="residency-period-row">
                 <input type="date" class="form-input period-start" value="${start}">
-                <input type="date" class="form-input period-end" value="${end}">
+                <input type="date" class="form-input period-end" value="${end}" ${isCurrent ? 'disabled' : ''}>
                 <select class="form-input period-status">
                     <option value="pr" ${status === 'pr' || status === 'permanent' ? 'selected' : ''}>PR</option>
                     <option value="temporary" ${status === 'temporary' ? 'selected' : ''}>Temporary</option>
                     <option value="absence" ${status === 'absence' ? 'selected' : ''}>Absence</option>
                 </select>
+                <div class="period-current-wrapper">
+                    <input type="checkbox" class="period-current-checkbox" ${isCurrent ? 'checked' : ''}>
+                    <small class="current-helper" style="display: ${isCurrent ? 'block' : 'none'};">Using today</small>
+                </div>
                 <button type="button" class="btn btn-danger btn-small remove-period">
                     <i class="fas fa-trash"></i>
                 </button>
@@ -327,6 +329,43 @@ class CitizenshipTracker {
         }
     }
 
+    handleResidencyPeriodChange(event) {
+        const checkbox = event.target.closest('.period-current-checkbox');
+        if (!checkbox) return;
+
+        const row = checkbox.closest('.residency-period-row');
+        if (!row) return;
+
+        const endDateInput = row.querySelector('.period-end');
+        const helperText = row.querySelector('.current-helper');
+        const container = document.getElementById('residencyPeriodsContainer');
+        
+        if (checkbox.checked) {
+            // If this checkbox is being checked, uncheck all others
+            const allRows = container.querySelectorAll('.residency-period-row');
+            allRows.forEach(otherRow => {
+                if (otherRow !== row) {
+                    const otherCheckbox = otherRow.querySelector('.period-current-checkbox');
+                    const otherEndDate = otherRow.querySelector('.period-end');
+                    const otherHelper = otherRow.querySelector('.current-helper');
+                    if (otherCheckbox && otherCheckbox.checked) {
+                        otherCheckbox.checked = false;
+                        otherEndDate.disabled = false;
+                        if (otherHelper) otherHelper.style.display = 'none';
+                    }
+                }
+            });
+            
+            // Disable end date input and show helper text
+            endDateInput.disabled = true;
+            if (helperText) helperText.style.display = 'block';
+        } else {
+            // Enable end date input and hide helper text
+            endDateInput.disabled = false;
+            if (helperText) helperText.style.display = 'none';
+        }
+    }
+
     // Calculations
     calculateTripDuration(departureDate, returnDate) {
         const departure = new Date(departureDate);
@@ -361,7 +400,13 @@ class CitizenshipTracker {
 
             residencyPeriods.forEach(period => {
                 const startDate = new Date(period.startDate);
-                const endDate = new Date(period.endDate);
+                // If period is marked as current, use today's date as end date
+                let endDate;
+                if (period.isCurrent) {
+                    endDate = new Date();
+                } else {
+                    endDate = new Date(period.endDate);
+                }
                 startDate.setHours(0, 0, 0, 0);
                 endDate.setHours(0, 0, 0, 0);
 
@@ -562,9 +607,7 @@ class CitizenshipTracker {
 
     // Settings Management
     saveSettings() {
-        const prDateValue = document.getElementById('prDate').value;
         const targetDateValue = document.getElementById('targetDate').value;
-        const residencyStatusValue = document.getElementById('residencyStatus').value;
         const container = document.getElementById('residencyPeriodsContainer');
         const rows = container ? [...container.querySelectorAll('.residency-period-row')] : [];
 
@@ -582,20 +625,41 @@ class CitizenshipTracker {
         windowStart.setHours(0, 0, 0, 0);
 
         const residencyPeriods = [];
+        let currentCount = 0;
 
         for (const row of rows) {
             const startValue = row.querySelector('.period-start').value;
             const endValue = row.querySelector('.period-end').value;
             const statusValue = row.querySelector('.period-status').value || 'pr';
+            const isCurrentCheckbox = row.querySelector('.period-current-checkbox');
+            const isCurrent = isCurrentCheckbox ? isCurrentCheckbox.checked : false;
 
-            if (!startValue || !endValue) {
-                alert('Please complete the start and end date for each residency period.');
+            if (!startValue) {
+                alert('Please complete the start date for each residency period.');
                 return;
             }
 
+            // Only require end date if not marked as current
+            if (!isCurrent && !endValue) {
+                alert('Please complete the end date for each residency period, or mark it as current status.');
+                return;
+            }
+
+            // Count current entries
+            if (isCurrent) {
+                currentCount++;
+            }
+
             const startDate = new Date(startValue);
-            const endDate = new Date(endValue);
             startDate.setHours(0, 0, 0, 0);
+
+            // For validation purposes, use today if current, otherwise use provided end date
+            let endDate;
+            if (isCurrent) {
+                endDate = new Date();
+            } else {
+                endDate = new Date(endValue);
+            }
             endDate.setHours(0, 0, 0, 0);
 
             if (startDate > endDate) {
@@ -608,23 +672,36 @@ class CitizenshipTracker {
                 return;
             }
 
-            if (endDate > windowEnd) {
+            if (!isCurrent && endDate > windowEnd) {
                 alert('Residency periods cannot extend beyond your application date.');
                 return;
             }
 
-            residencyPeriods.push({
+            const period = {
                 startDate: startValue,
-                endDate: endValue,
-                status: statusValue
-            });
+                status: statusValue,
+                isCurrent: isCurrent
+            };
+
+            // Only include endDate if not current
+            if (!isCurrent) {
+                period.endDate = endValue;
+            }
+
+            residencyPeriods.push(period);
+        }
+
+        // Validate only one entry can be current
+        if (currentCount > 1) {
+            alert('Only one residency period can be marked as current status.');
+            return;
         }
 
         const sortedPeriods = residencyPeriods
             .map(period => ({
                 ...period,
                 startTime: new Date(period.startDate).getTime(),
-                endTime: new Date(period.endDate).getTime()
+                endTime: period.isCurrent ? new Date().getTime() : new Date(period.endDate).getTime()
             }))
             .sort((a, b) => a.startTime - b.startTime);
 
@@ -635,10 +712,14 @@ class CitizenshipTracker {
             }
         }
 
-        this.settings.prDate = prDateValue;
         this.settings.targetDate = targetDateValue;
-        this.settings.residencyStatus = residencyStatusValue;
-        this.settings.residencyPeriods = sortedPeriods.map(({ startDate, endDate, status }) => ({ startDate, endDate, status }));
+        this.settings.residencyPeriods = sortedPeriods.map(({ startDate, endDate, status, isCurrent }) => {
+            const period = { startDate, status, isCurrent: !!isCurrent };
+            if (!isCurrent && endDate) {
+                period.endDate = endDate;
+            }
+            return period;
+        });
 
         this.saveData();
         this.updateDashboard();

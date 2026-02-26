@@ -218,45 +218,17 @@
                 </div>
 
                 <div class="settings-form">
-                    <div class="info-callout" style="margin-bottom: 20px; background: #e3f2fd; border-left-color: #2196f3;">
-                        <i class="fas fa-lightbulb" aria-hidden="true"></i>
-                        <div>
-                            <p style="margin-bottom: 8px;"><strong>Choose Your Tracking Mode:</strong></p>
-                            <p style="margin-bottom: 8px;">
-                                <strong>Simple Mode:</strong> If you became a PR and only need to track trips, use the "Permanent Resident Date" field below.
-                            </p>
-                            <p style="margin: 0;">
-                                <strong>Advanced Mode:</strong> If you had temporary status (work/study permit) before becoming a PR, or have extended absences, use the "Residency Timeline" section instead and leave the PR Date field empty.
-                            </p>
-                        </div>
-                    </div>
-
                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="prDate">Permanent Resident Date <span style="color: #666; font-weight: normal;">(Simple Mode)</span></label>
-                            <input type="date" id="prDate" class="form-input">
-                            <small>The date you became a permanent resident of Canada. Leave empty if using Residency Timeline below.</small>
-                        </div>
-
                         <div class="form-group">
                             <label for="targetDate">Target Application Date</label>
                             <input type="date" id="targetDate" class="form-input">
-                            <small>When you plan to apply for citizenship (optional)</small>
+                            <small>When you plan to apply for citizenship (optional, defaults to today)</small>
                         </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="residencyStatus">Current Status</label>
-                        <select id="residencyStatus" class="form-input">
-                            <option value="permanent">Permanent Resident</option>
-                            <option value="temporary">Temporary Resident</option>
-                            <option value="protected">Protected Person</option>
-                        </select>
                     </div>
 
                     <div class="form-group residency-periods-group full-width">
                         <div class="residency-periods-header">
-                            <label>Residency Timeline (Last 5 Years) <span style="color: #666; font-weight: normal;">(Advanced Mode)</span></label>
+                            <label>Residency Timeline (Last 5 Years)</label>
                             <button type="button" class="btn btn-secondary btn-small" id="addResidencyPeriodBtn">
                                 <i class="fas fa-plus"></i> Add Period
                             </button>
@@ -264,11 +236,11 @@
                         <small class="helper-text">
                             Track each stretch of time in or out of Canada so we can calculate credits accurately. Choose
                             <strong>PR</strong> for permanent residence, <strong>Temporary</strong> for work/study/visitor status,
-                            or <strong>Absence</strong> when you were outside Canada. <strong>Leave "Permanent Resident Date" field empty when using this mode.</strong>
+                            or <strong>Absence</strong> when you were outside Canada.
                         </small>
                         <small class="helper-text">
                             Temporary days count for half a day of credit (maximum 365 credited days). PR days count as full
-                            days, while absences receive no credit.
+                            days, while absences receive no credit. Mark your current status as "Current" to automatically use today as the end date.
                         </small>
                     </div>
 
@@ -277,6 +249,7 @@
                             <span>Start Date</span>
                             <span>End Date</span>
                             <span>Status</span>
+                            <span>Current</span>
                             <span></span>
                         </div>
                         <div id="residencyPeriodsContainer" class="timeline-body">

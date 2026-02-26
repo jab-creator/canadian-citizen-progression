@@ -56,9 +56,7 @@ The application implements the official Canadian citizenship requirements:
 - **730 Days as PR**: Must include at least 730 days as a permanent resident
 - **Temporary Resident Credit**: Days spent in Canada as a temporary resident before becoming a PR count as half days (maximum 365 credited days)
 - **Multiple Residency Periods**: Track different periods with different statuses (PR, Temporary, Absence)
-- **Flexible Calculation Mode**: 
-  - **Legacy Mode**: Uses PR date + trips for simple tracking
-  - **Residency Periods Mode**: Uses detailed period-by-period tracking for complex immigration histories
+- **Current Status Support**: Mark your current residency status to automatically use today's date as the end date
 - **Trip Overlap Handling**: Accurately calculates days outside Canada during the eligibility period
 - **Smart Date Calculations**: Handles edge cases and overlapping periods correctly
 
@@ -108,24 +106,18 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ## 📱 How to Use
 
-### 1. Initial Setup (Simple Mode)
+### 1. Initial Setup
 1. Go to the **Settings** tab
-2. Enter your **Permanent Resident Date**
-3. Optionally set a **Target Application Date**
-4. Save your settings
-
-### 1. Initial Setup (Advanced Mode - Residency Periods)
-For complex immigration histories with multiple statuses:
-1. Go to the **Settings** tab
-2. Set your **Target Application Date** (required for period tracking)
+2. Set your **Target Application Date** (optional, defaults to today)
 3. Click **"Add Period"** in the Residency Timeline section
 4. For each period in the last 5 years, add:
    - **Start Date**: When this period began
-   - **End Date**: When this period ended
+   - **End Date**: When this period ended (or check "Current" if it's your current status)
    - **Status**: Choose PR, Temporary, or Absence
      - **PR**: Full day credits (e.g., after becoming a permanent resident)
      - **Temporary**: Half day credits (e.g., work permit, study permit, visitor) - max 365 credited days
      - **Absence**: No credits (e.g., extended time outside Canada)
+   - **Current**: Check this box if this is your current status (end date will automatically use today)
 5. Save your settings
 
 **Example Immigration Timeline:**
@@ -143,7 +135,7 @@ For complex immigration histories with multiple statuses:
    - Reason for travel
 4. Save the trip
 
-**Note**: Trips are used in Legacy Mode (when not using Residency Periods). If you're using Residency Periods, track absences as "Absence" periods instead.
+**Note**: Track absences as "Absence" periods in your Residency Timeline. The Trips feature is maintained for backward compatibility but new users should use the Residency Timeline for all tracking.
 
 ### 3. Monitor Progress
 - The **Dashboard** automatically updates with your current status
