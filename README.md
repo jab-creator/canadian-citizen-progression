@@ -2,6 +2,8 @@
 
 A beautiful, interactive web application to track your progress towards Canadian citizenship eligibility. Monitor your days in Canada, manage your travel history, and see a real-time countdown to your eligibility date!
 
+> **⚠️ Security Notice**: This app works in local-only mode by default. Firebase cloud features are optional and require your own Firebase project. **Never commit firebase-config.js to version control**. See [SECURITY.md](SECURITY.md) for details.
+
 ## ✨ Features
 
 
@@ -84,15 +86,23 @@ php -S localhost:8000
 
 Then visit `http://localhost:8000` in your browser.
 
-### Option 4: Cloud-Enabled Setup (Recommended)
+### Option 4: Cloud-Enabled Setup (Optional)
 To enable cloud storage and sharing features:
 
 1. **Set up Firebase** (see [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for detailed instructions)
 2. **Configure your Firebase project** with Authentication and Firestore
-3. **Update the Firebase configuration** in `index.html` and `share.html`
+3. **Create your Firebase configuration file**:
+   ```bash
+   cp firebase-config.template.js firebase-config.js
+   # Edit firebase-config.js with your Firebase credentials
+   ```
 4. **Deploy to Firebase Hosting** (optional) for custom sharing URLs
 
+**Important**: Never commit `firebase-config.js` to version control. It's already in `.gitignore`.
+
 **Cost**: Free tier supports thousands of users. Paid tier starts at ~$1/month.
+
+**Security**: See [SECURITY.md](SECURITY.md) for Firebase API key best practices.
 
 ### Option 5: Docker Deployment
 ```bash
