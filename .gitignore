@@ -12,7 +12,9 @@ logs/
 .env.production
 
 # Firebase configuration (contains sensitive API keys)
-firebase-config.js
+# Note: firebase-config.js is now tracked with a safe placeholder
+# Edit it locally with your credentials but use --skip-worktree to prevent commits:
+# git update-index --skip-worktree firebase-config.js
 
 # Docker volumes
 nginx-logs/

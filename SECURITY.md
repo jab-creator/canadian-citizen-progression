@@ -16,21 +16,29 @@ If you discover a security vulnerability in this project, please report it by op
 
 ### Protecting Your Firebase Configuration
 
-This repository uses a template-based approach to keep Firebase credentials out of version control:
+This repository includes a safe placeholder `firebase-config.js` that is tracked by Git:
 
-1. **firebase-config.template.js** - Template file (safe to commit)
-2. **firebase-config.js** - Your actual config (ignored by Git)
+1. **firebase-config.js** - Safe placeholder (committed to repo)
+2. **firebase-config.template.js** - Alternative template file
 
 ### Setup Instructions
 
-1. Copy the template file:
+1. Edit `firebase-config.js` directly:
    ```bash
-   cp firebase-config.template.js firebase-config.js
+   nano firebase-config.js
+   # Uncomment the config section and add your Firebase credentials
    ```
 
-2. Edit `firebase-config.js` with your Firebase credentials from the [Firebase Console](https://console.firebase.google.com/)
+2. Get your credentials from the [Firebase Console](https://console.firebase.google.com/)
 
-3. **Never commit firebase-config.js** - it's already in `.gitignore`
+3. **Prevent committing your credentials**:
+   ```bash
+   # Tell Git to ignore local changes to this file
+   git update-index --skip-worktree firebase-config.js
+   
+   # To undo this later:
+   git update-index --no-skip-worktree firebase-config.js
+   ```
 
 ### If Your API Key is Exposed
 
