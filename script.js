@@ -419,7 +419,8 @@ class CitizenshipTracker {
                     return;
                 }
 
-                const dayCount = Math.floor((overlapEnd - overlapStart) / msInDay) + 1;
+                // Use Math.ceil to match simple mode calculation (not floor + 1)
+                const dayCount = Math.ceil((overlapEnd - overlapStart) / msInDay);
                 const status = (period.status || 'pr').toLowerCase();
 
                 if (status === 'temporary') {
@@ -436,7 +437,8 @@ class CitizenshipTracker {
             const uncoveredDays = Math.max(0, totalDaysInPeriod - recordedDays);
             const temporaryCredit = Math.min(365, temporaryDays * 0.5);
             const daysInCanada = Math.max(0, prDays + temporaryCredit);
-            const daysOutside = absenceDays + uncoveredDays;
+            // Only count absence periods as "days outside" - uncovered days are simply not counted
+            const daysOutside = absenceDays;
 
             return {
                 daysInCanada,
