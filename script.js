@@ -266,7 +266,7 @@ class CitizenshipTracker {
                 </select>
                 <div class="period-current-wrapper">
                     <input type="checkbox" class="period-current-checkbox" ${isCurrent ? 'checked' : ''}>
-                    <small class="current-helper" style="display: ${isCurrent ? 'block' : 'none'};">Using today</small>
+                    <small class="current-helper" style="display: ${isCurrent ? 'block' : 'none'};">Through yesterday</small>
                 </div>
                 <button type="button" class="btn btn-danger btn-small remove-period">
                     <i class="fas fa-trash"></i>
@@ -400,10 +400,12 @@ class CitizenshipTracker {
 
             residencyPeriods.forEach(period => {
                 const startDate = new Date(period.startDate);
-                // If period is marked as current, use today's date as end date
+                // If period is marked as current, use yesterday's date as end date
+                // (don't count today as a completed day)
                 let endDate;
                 if (period.isCurrent) {
                     endDate = new Date();
+                    endDate.setDate(endDate.getDate() - 1); // Use yesterday, not today
                 } else {
                     endDate = new Date(period.endDate);
                 }
