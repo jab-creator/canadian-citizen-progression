@@ -218,30 +218,61 @@
                 </div>
 
                 <div class="settings-form">
-                    <div class="form-group">
-                        <label for="prDate">Permanent Resident Date</label>
-                        <input type="date" id="prDate" class="form-input">
-                        <small>The date you became a permanent resident of Canada</small>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="targetDate">Target Application Date</label>
+                            <input type="date" id="targetDate" class="form-input">
+                            <small>When you plan to apply for citizenship (optional, defaults to today)</small>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="targetDate">Target Application Date</label>
-                        <input type="date" id="targetDate" class="form-input">
-                        <small>When you plan to apply for citizenship (optional)</small>
+                    <div class="form-group residency-periods-group full-width">
+                        <div class="residency-periods-header">
+                            <label>Residency Timeline (Last 5 Years)</label>
+                            <button type="button" class="btn btn-secondary btn-small" id="addResidencyPeriodBtn">
+                                <i class="fas fa-plus"></i> Add Period
+                            </button>
+                        </div>
+                        <small class="helper-text">
+                            Track each stretch of time in or out of Canada so we can calculate credits accurately. Choose
+                            <strong>PR</strong> for permanent residence, <strong>Temporary</strong> for work/study/visitor status,
+                            or <strong>Absence</strong> when you were outside Canada.
+                        </small>
+                        <small class="helper-text">
+                            Temporary days count for half a day of credit (maximum 365 credited days). PR days count as full
+                            days, while absences receive no credit. Mark your current status as "Current" to automatically use today as the end date.
+                        </small>
                     </div>
 
-                    <div class="form-group">
-                        <label for="residencyStatus">Current Status</label>
-                        <select id="residencyStatus" class="form-input">
-                            <option value="permanent">Permanent Resident</option>
-                            <option value="temporary">Temporary Resident</option>
-                            <option value="protected">Protected Person</option>
-                        </select>
+                    <div class="residency-periods-card">
+                        <div class="timeline-header">
+                            <span>Start Date</span>
+                            <span>End Date</span>
+                            <span>Status</span>
+                            <span>Current</span>
+                            <span></span>
+                        </div>
+                        <div id="residencyPeriodsContainer" class="timeline-body">
+                            <div class="empty-state small-empty">
+                                <i class="fas fa-calendar-plus"></i>
+                                <p>Use “Add Period” to record your residency history.</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <button class="btn btn-primary" id="saveSettingsBtn">
-                        <i class="fas fa-save"></i> Save Settings
-                    </button>
+                    <div class="info-callout">
+                        <i class="fas fa-info-circle" aria-hidden="true"></i>
+                        <p>
+                            Only periods within the five years before your application date count toward eligibility. We’ll
+                            flag overlaps or dates outside that window so your calculation stays aligned with IRCC rules.
+                        </p>
+                    </div>
+
+                    <div class="form-group full-width" style="text-align: center; margin-top: 30px;">
+                        <button class="btn btn-primary" id="saveSettingsBtn">
+                            <i class="fas fa-save"></i> Save Settings
+                        </button>
+                    </div>
                 </div>
             </section>
 

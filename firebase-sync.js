@@ -480,21 +480,100 @@ class FirebaseSyncManager {
     // Calculate public stats (no personal details)
     calculatePublicStats(trips, settings) {
         // Use the same calculation logic as the main app
-        const prDate = settings.prDate ? new Date(settings.prDate) : null;
-        const today = new Date();
-        
+        const targetDateValue = settings.targetDate;
+        const applicationDate = targetDateValue ? new Date(targetDateValue) : new Date();
+
+        if (isNaN(applicationDate.getTime())) {
+            return {
+                daysInCanada: 0,
+                progressPercentage: 0,
+                daysRemaining: 1095,
+                totalTrips: trips.length,
+                isPRDateSet: false
+            };
+        }
+
+        applicationDate.setHours(0, 0, 0, 0);
+        const eligibilityPeriodEnd = new Date(applicationDate);
+        const eligibilityPeriodStart = new Date(applicationDate);
+        eligibilityPeriodStart.setFullYear(eligibilityPeriodStart.getFullYear() - 5);
+
+        const msInDay = 1000 * 60 * 60 * 24;
+        const residencyPeriods = Array.isArray(settings.residencyPeriods) ? settings.residencyPeriods : [];
+
+        let daysInCanada = 0;
         let daysOutside = 0;
-        let totalTrips = trips.length;
-        
-        trips.forEach(trip => {
-            const departure = new Date(trip.departureDate);
-            const returnDate = new Date(trip.returnDate);
-            const tripDays = Math.ceil((returnDate - departure) / (1000 * 60 * 60 * 24));
-            daysOutside += tripDays;
-        });
-        
-        const totalDaysSincePR = prDate ? Math.ceil((today - prDate) / (1000 * 60 * 60 * 24)) : 0;
-        const daysInCanada = Math.max(0, totalDaysSincePR - daysOutside);
+
+        // If using residency periods, calculate using the new method
+        if (residencyPeriods.length > 0) {
+            let prDays = 0;
+            let temporaryDays = 0;
+            let absenceDays = 0;
+
+            residencyPeriods.forEach(period => {
+                const startDate = new Date(period.startDate);
+                const endDate = new Date(period.endDate);
+                startDate.setHours(0, 0, 0, 0);
+                endDate.setHours(0, 0, 0, 0);
+
+                const overlapStart = startDate > eligibilityPeriodStart ? startDate : new Date(eligibilityPeriodStart);
+                const overlapEnd = endDate < eligibilityPeriodEnd ? endDate : new Date(eligibilityPeriodEnd);
+
+                if (overlapStart > overlapEnd) {
+                    return;
+                }
+
+                const dayCount = Math.floor((overlapEnd - overlapStart) / msInDay) + 1;
+                const status = (period.status || 'pr').toLowerCase();
+
+                if (status === 'temporary') {
+                    temporaryDays += dayCount;
+                } else if (status === 'absence') {
+                    absenceDays += dayCount;
+                } else {
+                    prDays += dayCount;
+                }
+            });
+
+            const totalDaysInPeriod = Math.max(0, Math.floor((eligibilityPeriodEnd - eligibilityPeriodStart) / msInDay) + 1);
+            const recordedDays = prDays + temporaryDays + absenceDays;
+            const uncoveredDays = Math.max(0, totalDaysInPeriod - recordedDays);
+            const temporaryCredit = Math.min(365, temporaryDays * 0.5);
+            daysInCanada = Math.max(0, prDays + temporaryCredit);
+            daysOutside = absenceDays + uncoveredDays;
+        } else if (settings.prDate) {
+            // Fallback to old calculation method
+            const prDate = new Date(settings.prDate);
+            prDate.setHours(0, 0, 0, 0);
+
+            const actualStart = prDate > eligibilityPeriodStart ? prDate : eligibilityPeriodStart;
+            
+            if (eligibilityPeriodEnd >= actualStart) {
+                const totalDaysInPeriod = Math.ceil((eligibilityPeriodEnd - actualStart) / msInDay);
+
+                let tripDaysOutside = 0;
+                trips.forEach(trip => {
+                    const tripStart = new Date(trip.departureDate);
+                    const tripEnd = new Date(trip.returnDate);
+                    tripStart.setHours(0, 0, 0, 0);
+                    tripEnd.setHours(0, 0, 0, 0);
+
+                    if (tripEnd >= actualStart && tripStart <= eligibilityPeriodEnd) {
+                        const overlapStart = tripStart > actualStart ? tripStart : actualStart;
+                        const overlapEnd = tripEnd < eligibilityPeriodEnd ? tripEnd : eligibilityPeriodEnd;
+
+                        if (overlapStart < overlapEnd) {
+                            const totalDays = Math.ceil((overlapEnd - overlapStart) / msInDay);
+                            tripDaysOutside += Math.max(0, totalDays - 1);
+                        }
+                    }
+                });
+
+                daysInCanada = Math.max(0, totalDaysInPeriod - tripDaysOutside - 1);
+                daysOutside = tripDaysOutside;
+            }
+        }
+
         const progressPercentage = Math.min(100, (daysInCanada / 1095) * 100);
         const daysRemaining = Math.max(0, 1095 - daysInCanada);
         
@@ -502,8 +581,8 @@ class FirebaseSyncManager {
             daysInCanada,
             progressPercentage: Math.round(progressPercentage),
             daysRemaining,
-            totalTrips,
-            isPRDateSet: !!prDate
+            totalTrips: trips.length,
+            isPRDateSet: !!settings.prDate || residencyPeriods.length > 0
         };
     }
 }

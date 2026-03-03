@@ -1,0 +1,25 @@
+{
+  "trips": [],
+  "settings": {
+    "targetDate": "2024-11-12",
+    "residencyPeriods": [
+      {
+        "startDate": "2019-11-12",
+        "endDate": "2022-06-30",
+        "status": "pr",
+        "isCurrent": false
+      },
+      {
+        "startDate": "2022-07-01",
+        "endDate": "2023-12-31",
+        "status": "absence",
+        "isCurrent": false
+      },
+      {
+        "startDate": "2024-01-01",
+        "status": "pr",
+        "isCurrent": true
+      }
+    ]
+  }
+}
