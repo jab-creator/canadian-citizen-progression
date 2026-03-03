@@ -91,18 +91,14 @@ To enable cloud storage and sharing features:
 
 1. **Set up Firebase** (see [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for detailed instructions)
 2. **Configure your Firebase project** with Authentication and Firestore
-3. **Edit your Firebase configuration file**:
+3. **Create your Firebase configuration file**:
    ```bash
-   # Edit firebase-config.js and uncomment the config section
-   # Add your Firebase credentials from console.firebase.google.com
-   nano firebase-config.js
-   
-   # Optional: Prevent accidental commits of your credentials
-   git update-index --skip-worktree firebase-config.js
+   cp firebase-config.template.js firebase-config.js
+   # Edit firebase-config.js with your Firebase credentials
    ```
 4. **Deploy to Firebase Hosting** (optional) for custom sharing URLs
 
-**Important**: The committed `firebase-config.js` is a safe placeholder. Edit it locally with your credentials but don't commit your actual API keys.
+**Important**: Never commit `firebase-config.js` to version control. It's already in `.gitignore`.
 
 **Cost**: Free tier supports thousands of users. Paid tier starts at ~$1/month.
 
