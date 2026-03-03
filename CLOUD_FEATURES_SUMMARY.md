@@ -14,6 +14,7 @@
 - **Offline-First**: Works without internet, syncs when back online
 - **Conflict Resolution**: Smart merging when data exists both locally and in cloud
 - **Data Migration**: Seamless transition from localStorage to cloud storage
+- **Full Data Support**: Syncs trips, settings, and residency periods across devices
 
 ### 🔗 Sharing System
 - **Public Links**: Generate shareable URLs like `yoursite.com/share/abc123`
@@ -35,7 +36,7 @@
 - **Hosting**: 10 GiB storage, 10 GiB transfer/month
 
 ### Your Usage Estimate
-- **Per User**: ~10KB of data (trips + settings)
+- **Per User**: ~10KB of data (trips + settings + residency periods)
 - **Daily Activity**: ~100 reads, ~10 writes per active user
 - **1000 Users**: Only 10MB total storage, well within limits
 
