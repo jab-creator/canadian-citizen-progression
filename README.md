@@ -1,6 +1,10 @@
 # Canadian Citizenship Tracker 🇨🇦
 
-A beautiful, interactive web application to track your progress towards Canadian citizenship eligibility. Monitor your days in Canada, manage your travel history, and see a real-time countdown to your eligibility date!
+A web application for tracking Canadian citizenship physical-presence eligibility, travel history and progress toward the 1,095-day requirement.
+
+**Engineering overview:** Independently developed web product with date-calculation logic, browser data storage, optional cloud sync, Firebase integration and automated GitHub Actions workflows. The repository also serves as a sample target for a [cross-repository Python QA runner](https://github.com/jab-creator/testing-agent), including a `.qa-agent.yml` test configuration.
+
+**Portfolio focus:** Web application delivery, data validation, integration, CI/CD and repeatable automated testing. This is an independent project, not an official Government of Canada service or legal eligibility determination.
 
 ## ✨ Features
 
